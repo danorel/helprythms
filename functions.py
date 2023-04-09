@@ -18,7 +18,7 @@ class FH:
         return np.count_nonzero(chromosome_code)
 
     def generate_optimal(self, length):
-        return Chromosome(np.zeros((length,), dtype=int), length)
+        return Chromosome(np.zeros((length,), dtype=int).tolist(), length)
 
     def get_optimal(self, n, l, p_m, c_m, i):
         return self.generate_optimal(l)
@@ -40,7 +40,7 @@ class FHD:
         return (len(chromosome) - k) + k * self.delta
 
     def generate_optimal(self, length):
-        return Chromosome(np.zeros((length,), dtype=int), length * self.delta)
+        return Chromosome(np.zeros((length,), dtype=int).tolist(), length * self.delta)
 
     def get_optimal(self, n, l, p_m, c_m, i):
         return self.generate_optimal(l)
@@ -55,8 +55,8 @@ class Fconst:
 
     def generate_optimal(self, length: int):
         return [
-            Chromosome(np.zeros((length,), dtype=int), length),
-            Chromosome(np.ones((length,), dtype=int), length),
+            Chromosome(np.zeros((length,), dtype=int).tolist(), length),
+            Chromosome(np.ones((length,), dtype=int).tolist(), length),
         ]
 
     def generate_population(self, n, l, p_m, c_m):
