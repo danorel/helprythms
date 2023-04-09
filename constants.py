@@ -1,7 +1,7 @@
 env = "test"
 
 # Runs: amount of evolutionary algorithms to probe.
-MAX_RUNS = 10 if env == "test" else 100
+MAX_RUNS = 5 if env == "test" else 100
 
 # Genotype: amount of genes.
 N = 100

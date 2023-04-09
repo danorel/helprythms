@@ -26,43 +26,42 @@ def decimal_converter(num):
 
 
 def gray_to_binary(gray):
-    binary_code = [gray[0]]
-
+    binary = str(gray[0])
     for i in range(1, len(gray)):
-        if gray[i] == 0:
-            binary_code += str(binary_code[i - 1])
-        else:
-            binary_code += str(flip_num(binary_code[i - 1]))
-
-    return binary_code
+        binary += str(int(binary[i - 1]) ^ int(gray[i]))
+    return binary
 
 
-def binary_to_gray(bin_arr):
-    n = "".join([str(x) for x in bin_arr])
-    n = int(n, 2)
-    n ^= n >> 1
+def binary_to_gray(binary):
+    gray = str(binary[0])
+    for i in range(1, len(binary)):
+        gray += str(int(binary[i - 1]) ^ int(binary[i]))
+    return gray
 
-    return bin(n)[2:]
+
+def gray_to_decimal(gray):
+    binary = gray_to_binary(gray)
+    return int(binary, 2)
+
+
+def decimal_to_gray(decimal):
+    binary = bin(decimal)[2:]
+    return binary_to_gray(binary)
 
 
 def encode(x, a, b, m):
-    n = int((x - a) * (2**m - 1) / (b - a))
-    n ^= n >> 1
-    code = bin(n)[2:]
-    while len(code) < m:
-        code = "0" + code
-    return split_str_code(code)
-
-
-def to_decimal(gray_code_arr):
-    bin_arr = gray_to_binary(gray_code_arr)
-    str_bin_code = "".join([str(x) for x in bin_arr])
-    return int(str_bin_code, 2)
-
-
-def split_str_code(s):
-    return [int(ch) for ch in s]
+    step = (math.pow(2, m) - 1) / (b - a)
+    n = round((x - a) * step)
+    code = decimal_to_gray(n)
+    return code
 
 
 def decode(code, a, b, m):
-    return round(a + to_decimal(code) * ((b - a) / (math.pow(2, m) - 1)), 2)
+    step = (b - a) / (math.pow(2, m) - 1)
+    n = gray_to_decimal(code)
+    x = round(a + n * step, 2)
+    return x 
+
+
+def chars2ints(s):
+    return [int(ch) for ch in s]

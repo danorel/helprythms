@@ -93,7 +93,7 @@ class PopulationFactory:
 
         return Population(chromosomes, p_m)
 
-    def generate_population_f2x2(self, n, l, p_m, i):
+    def generate_population_fecx(self, n, l, p_m, i):
         if i < 5 or p_m == 0:
             chromosomes = [self.fitness_function.generate_optimal(l)]
         else:
@@ -117,7 +117,7 @@ class PopulationFactory:
 
         return Population(chromosomes, p_m)
 
-    def generate_population_f512(self, n, l, p_m, i):
+    def generate_population_f5122subx2(self, n, l, p_m, i):
         if i < 5 or p_m == 0:
             chromosomes = [self.fitness_function.generate_optimal(l)]
         else:
@@ -132,28 +132,6 @@ class PopulationFactory:
                 Chromosome(
                     encode(x, -5.11, 5.12, l),
                     math.pow(5.12, 2) - math.pow(x, 2),
-                    start + 1,
-                )
-            )
-            start = start + 1
-
-        return Population(chromosomes, p_m)
-
-    def generate_population_f514(self, n, l, p_m, i):
-        if i < 5 or p_m == 0:
-            chromosomes = [self.fitness_function.generate_optimal(l)]
-        else:
-            chromosomes = []
-        start = len(chromosomes)
-
-        fitness_list = random.binomial(n=5.12**4, p=0.5, size=n - start)
-
-        for y in fitness_list:
-            x = round(math.sqrt((math.sqrt(5.12**4 - y))), 2)
-            chromosomes.append(
-                Chromosome(
-                    encode(x, -5.11, 5.12, l),
-                    math.pow(5.12, 4) - math.pow(x, 4),
                     start + 1,
                 )
             )

@@ -67,20 +67,24 @@ class Fx2:
     def __init__(self, a: float, b: float):
         self.a = a
         self.b = b
+        self.extremum_x = b
+        self.extremum_y = math.pow(b, 2)
         self.factory = PopulationFactory(self)
+
+    def score(self, x: float):
+        return math.pow(x, 2)
 
     def estimate(self, chromosome_code):
         x = decode(chromosome_code, self.a, self.b, len(chromosome_code))
-        return math.pow(x, 2)
+        return self.score(x)
 
     def get_genotype_value(self, chromosome_code):
         x = decode(chromosome_code, self.a, self.b, len(chromosome_code))
-        return math.pow(x, 2)
+        return self.score(x)
 
     def generate_optimal(self, length):
-        extremum = self.b
-        gray_code = encode(extremum, self.a, self.b, length)
-        return Chromosome(gray_code, math.pow(self.b, 2))
+        gray_code = encode(self.extremum_x, self.a, self.b, length)
+        return Chromosome(gray_code, self.extremum_y)
 
     def get_optimal(self, n, l, p_m, i):
         return self.generate_optimal(l)
@@ -88,9 +92,10 @@ class Fx2:
     def generate_population(self, n, l, p_m, i):
         return self.factory.generate_population_fx2(n, l, p_m, i)
 
-    def check_chromosome_success(self, ch: Chromosome):
-        x = decode(ch.code, self.a, self.b, len(ch.code))
-        return ((math.pow(self.b, 2) - ch.fitness) <= DELTA) and (x - self.b) <= SIGMA
+    def check_chromosome_success(self, chromosome: Chromosome):
+        x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
+        y = chromosome.fitness
+        return (self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
 
 
 class F5122subx2:
@@ -120,7 +125,7 @@ class F5122subx2:
         return Chromosome(gray_code, self.extremum_y)
 
     def generate_population(self, n, l, p_m, i):
-        return self.factory.generate_population_f512(n, l, p_m, i)
+        return self.factory.generate_population_f5122subx2(n, l, p_m, i)
 
     def check_chromosome_success(self, chromosome: Chromosome):
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
@@ -156,7 +161,7 @@ class Fecx:
         return self.generate_optimal(l)
 
     def generate_population(self, n, l, p_m, i):
-        return self.factory.generate_population_fx2(n, l, p_m, i)
+        return self.factory.generate_population_fecx(n, l, p_m, i)
 
     def check_chromosome_success(self, chromosome: Chromosome):
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))

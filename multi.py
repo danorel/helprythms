@@ -26,10 +26,8 @@ release_functions = [
     (Fecx(0, 10.23, 2), selection_methods, "Fx", N, 10, 0),
 ]
 test_functions = [
-    (FH(), selection_methods, "FH", N, 100, 0),
     (FH(), selection_methods, "FH_pm", N, 100, fh_pm),
-    (Fecx(0, 10.23, 1), selection_methods, "Fx", N, 10, 0),
-    (Fx2(0, 10.23), selection_methods, "Fx2", N, 10, 0),
+    (Fecx(0, 10.23, 1), selection_methods, "Fecx_pm", N, 10, fx2_pm),
     (Fx2(0, 10.23), selection_methods, "Fx2_pm", N, 10, fx2_pm),
 ]
 functions = test_functions if env == "test" else release_functions
