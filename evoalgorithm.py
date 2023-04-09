@@ -1,3 +1,4 @@
+import time
 from pressure_stats import PressureStats
 from noise_stats import NoiseStats
 from selection_diff_stats import SelectionDiffStats
@@ -63,6 +64,7 @@ class EvoAlgorithm:
             not_selected_chromosomes = set(keys_before_selection) - set(
                 keys_after_selection
             )
+            self.population.crossover(self.fitness_function)
             self.population.mutate(self.fitness_function)
             f_std = self.population.get_fitness_std()
             std_fitness_list.append(f_std)
@@ -133,10 +135,9 @@ class EvoAlgorithm:
     def check_success(self):
         ff_name = self.fitness_function.__class__.__name__
         if ff_name == "FH" or ff_name == "FHD":
-            return (
-                self.population.get_chromosomes_copies_count(list(self.optimal.code))
-                == N
-            )
+            optimal_chromosome = list(self.optimal.code)
+            optimal_chromosomes = self.population.get_chromosomes_copies_count(optimal_chromosome)
+            return optimal_chromosomes == N
         else:
             return any(
                 [
@@ -147,8 +148,8 @@ class EvoAlgorithm:
 
     @staticmethod
     def calculate_noise(sf):
-        pop = Fconst().generate_population(N, 100, 0)
-        population = Population(pop.chromosomes.copy(), pop.p_m)
+        pop = Fconst().generate_population(N, 100, 0, 0)
+        population = Population(pop.chromosomes.copy(), pop.p_m, pop.c_m)
         iteration = 0
         stop = 1000 if "Disruptive" in sf.__class__.__name__ else G
 

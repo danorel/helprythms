@@ -1,4 +1,5 @@
 import numpy as np
+
 from chromosome import Chromosome
 from constants import DELTA, SIGMA
 from population import Population
@@ -19,11 +20,11 @@ class FH:
     def generate_optimal(self, length):
         return Chromosome(np.zeros((length,), dtype=int), length)
 
-    def get_optimal(self, n, l, p_m, i):
+    def get_optimal(self, n, l, p_m, c_m, i):
         return self.generate_optimal(l)
 
-    def generate_population(self, n, l, p_m, i):
-        return self.factory.generate_population(n, l, p_m, i)
+    def generate_population(self, n, l, p_m, c_m, i):
+        return self.factory.generate_population_fh(n, l, p_m, c_m, i)
 
 
 class FHD:
@@ -41,11 +42,11 @@ class FHD:
     def generate_optimal(self, length):
         return Chromosome(np.zeros((length,), dtype=int), length * self.delta)
 
-    def get_optimal(self, n, l, p_m, i):
+    def get_optimal(self, n, l, p_m, c_m, i):
         return self.generate_optimal(l)
 
-    def generate_population(self, n, l, p_m, i):
-        return self.factory.generate_population_fhd(n, l, p_m, i)
+    def generate_population(self, n, l, p_m, c_m, i):
+        return self.factory.generate_population_fhd(n, l, p_m, c_m, i)
 
 
 class Fconst:
@@ -58,9 +59,9 @@ class Fconst:
             Chromosome(np.ones((length,), dtype=int), length),
         ]
 
-    def generate_population(self, n, l, p_m):
+    def generate_population(self, n, l, p_m, c_m):
         chromosomes = self.generate_optimal(l) * int(n / 2)
-        return Population(chromosomes, p_m)
+        return Population(chromosomes, p_m, c_m)
 
 
 class Fx2:
@@ -83,19 +84,19 @@ class Fx2:
         return self.score(x)
 
     def generate_optimal(self, length):
-        gray_code = encode(self.extremum_x, self.a, self.b, length)
-        return Chromosome(gray_code, self.extremum_y)
+        coding = encode(self.extremum_x, self.a, self.b, length)
+        return Chromosome(coding, self.extremum_y)
 
-    def get_optimal(self, n, l, p_m, i):
+    def get_optimal(self, n, l, p_m, c_m, i):
         return self.generate_optimal(l)
 
-    def generate_population(self, n, l, p_m, i):
-        return self.factory.generate_population_fx2(n, l, p_m, i)
+    def generate_population(self, n, l, p_m, c_m, i):
+        return self.factory.generate_population_fx2(n, l, p_m, c_m, i)
 
     def check_chromosome_success(self, chromosome: Chromosome):
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
-        y = chromosome.fitness
-        return (self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
+        y = self.score(x) 
+        return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
 
 
 class F5122subx2:
@@ -117,20 +118,20 @@ class F5122subx2:
         x = decode(chromosome_code, self.a, self.b, len(chromosome_code))
         return x
 
-    def get_optimal(self, n, l, p_m, i):
+    def get_optimal(self, n, l, p_m, c_m, i):
         return self.generate_optimal(l)
 
     def generate_optimal(self, length):
-        gray_code = encode(self.extremum_x, self.a, self.b, length)
-        return Chromosome(gray_code, self.extremum_y)
+        coding = encode(self.extremum_x, self.a, self.b, length)
+        return Chromosome(coding, self.extremum_y)
 
-    def generate_population(self, n, l, p_m, i):
-        return self.factory.generate_population_f5122subx2(n, l, p_m, i)
+    def generate_population(self, n, l, p_m, c_m, i):
+        return self.factory.generate_population_f5122subx2(n, l, p_m, c_m, i)
 
     def check_chromosome_success(self, chromosome: Chromosome):
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
-        y = chromosome.fitness
-        return (self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
+        y = self.score(x) 
+        return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
 
 
 class Fecx:
@@ -154,16 +155,16 @@ class Fecx:
         return self.score(x)
 
     def generate_optimal(self, length):
-        gray_code = encode(self.extremum_x, self.a, self.b, length)
-        return Chromosome(gray_code, self.extremum_y)
+        coding = encode(self.extremum_x, self.a, self.b, length)
+        return Chromosome(coding, self.extremum_y)
 
-    def get_optimal(self, n, l, p_m, i):
+    def get_optimal(self, n, l, p_m, c_m, i):
         return self.generate_optimal(l)
 
-    def generate_population(self, n, l, p_m, i):
-        return self.factory.generate_population_fecx(n, l, p_m, i)
+    def generate_population(self, n, l, p_m, c_m, i):
+        return self.factory.generate_population_fecx(n, l, p_m, c_m, i)
 
     def check_chromosome_success(self, chromosome: Chromosome):
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
-        y = chromosome.fitness
-        return (self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
+        y = self.score(x) 
+        return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA

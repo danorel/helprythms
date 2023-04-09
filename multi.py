@@ -1,6 +1,6 @@
 import time
 from multiprocessing import Pool
-from constants import fh_pm, fhd_pm, fx2_pm, env
+from constants import P_M, P_C, env
 from functions import *
 from rws import RankExponentialRWS
 from sus import RankExponentialSUS
@@ -13,22 +13,22 @@ release_sm = [RankExponentialSUS, RankExponentialRWS]
 testing_sm = [RankExponentialSUS, RankExponentialRWS]
 selection_methods = testing_sm if env == "test" else release_sm
 release_functions = [
-    (FH(), selection_methods, "FH", N, 100, 0),
-    (FH(), selection_methods, "FH_pm", N, 100, fh_pm),
-    (FHD(100), selection_methods, "FHD_100", N, 100, 0),
-    (FHD(100), selection_methods, "FHD_100_pm", N, 100, fhd_pm),
-    (Fx2(0, 10.23), selection_methods, "Fx2", N, 10, 0),
-    (Fx2(0, 10.23), selection_methods, "Fx2_pm", N, 10, fx2_pm),
-    (F5122subx2(-5.11, 5.12), selection_methods, "5_12_sub_X2", N, 10, 0),
-    (F5122subx2(-5.11, 5.12), selection_methods, "5_12_sub_X2_pm", N, 10, fx2_pm),
-    (Fecx(0, 10.23, 0.25), selection_methods, "Fx", N, 10, 0),
-    (Fecx(0, 10.23, 1), selection_methods, "Fx", N, 10, 0),
-    (Fecx(0, 10.23, 2), selection_methods, "Fx", N, 10, 0),
+    (FH(), selection_methods, "FH", N, 100, 0, P_C),
+    (FH(), selection_methods, "FH_pm", N, 100, P_M, P_C),
+    (FHD(100), selection_methods, "FHD_100", N, 100, 0, P_C),
+    (FHD(100), selection_methods, "FHD_100_pm", N, 100, P_M, P_C),
+    (Fx2(0, 10.23), selection_methods, "Fx2", N, 10, 0, P_C),
+    (Fx2(0, 10.23), selection_methods, "Fx2_pm", N, 10, P_M, P_C),
+    (F5122subx2(-5.11, 5.12), selection_methods, "5_12_sub_X2", N, 10, 0, P_C),
+    (F5122subx2(-5.11, 5.12), selection_methods, "5_12_sub_X2_pm", N, 10, P_M, P_C),
+    (Fecx(0, 10.23, 0.25), selection_methods, "Fx", N, 10, 0, P_C),
+    (Fecx(0, 10.23, 1), selection_methods, "Fx", N, 10, 0, P_C),
+    (Fecx(0, 10.23, 2), selection_methods, "Fx", N, 10, 0, P_C),
 ]
 test_functions = [
-    (FH(), selection_methods, "FH_pm", N, 100, fh_pm),
-    (Fecx(0, 10.23, 1), selection_methods, "Fecx_pm", N, 10, fx2_pm),
-    (Fx2(0, 10.23), selection_methods, "Fx2_pm", N, 10, fx2_pm),
+    (FH(), selection_methods, "FH_pm", N, 100, P_M, P_C),
+    (Fecx(0, 10.23, 1), selection_methods, "Fecx_pm", N, 10, P_M, P_C),
+    (Fx2(0, 10.23), selection_methods, "Fx2_pm", N, 10, P_M, P_C),
 ]
 functions = test_functions if env == "test" else release_functions
 

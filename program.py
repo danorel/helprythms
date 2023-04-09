@@ -80,7 +80,7 @@ def save_run_plots(ff_name, sf_name, run, iteration):
     )
 
 
-def main(fitness_function, selection_functions: [], file_name, *args):
+def main(fitness_function, selection_functions: list, file_name, *args):
     p_start = time.time()
     runs_dict = {}
     ff_name = fitness_function.__class__.__name__
@@ -97,7 +97,10 @@ def main(fitness_function, selection_functions: [], file_name, *args):
             optimal = fitness_function.get_optimal(*args, i=i)
             folder_name = file_name if file_name is not None else ff_name
             current_run = EvoAlgorithm(
-                Population(p.chromosomes.copy(), p.p_m), sf, fitness_function, optimal
+                Population(p.chromosomes.copy(), p.p_m, p.c_m), 
+                sf, 
+                fitness_function, 
+                optimal
             ).run(i, folder_name, 5)
             save_run_plots(folder_name, sf_name, current_run, i)
             runs_dict[sf_name].runs.append(current_run)

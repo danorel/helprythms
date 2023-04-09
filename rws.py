@@ -9,18 +9,13 @@ class RankExponentialRWS:
     def exponential_rws(self, population: Population):
         size = len(population.fitness_list)
 
-        individuals_scaled_fitness = list(
-            map(lambda index: self.scale(size, index), range(size))
+        probabilities = list(
+            map(lambda index: self.scale(size, index), range(1, size + 1))
         )
-        population_scaled_fitness = sum(individuals_scaled_fitness)
 
-        if population_scaled_fitness == 0:
+        if sum(probabilities) == 0:
             return population
 
-        probabilities = [
-            individual_scaled_fitness / population_scaled_fitness
-            for individual_scaled_fitness in individuals_scaled_fitness
-        ]
         population.update_rws(probabilities)
 
         return population
