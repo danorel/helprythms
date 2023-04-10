@@ -7,11 +7,10 @@ from population import Population
 
 class RankExponentialRWS:
     def exponential_rws(self, population: Population):
-        size = len(population.fitness_list)
+        N = len(population.fitness_list)
 
-        probabilities = list(
-            map(lambda index: self.scale(size, index), range(1, size + 1))
-        )
+        ranks = list(map(lambda index: N - index, range(0, N)))
+        probabilities = list(map(lambda rank: self.scale(N, rank), ranks))
 
         if sum(probabilities) == 0:
             return population
@@ -27,14 +26,16 @@ class RankExponentialRWS:
         population.update_chromosomes(chromosomes)
         return self.exponential_rws(population)
 
-    def scale(self, size: int, rank: int):
-        return ((C - 1) / (pow(C, size) - 1)) * pow(C, size - rank)
+    def scale(self, N: int, rank: int):
+        return ((C - 1) / (pow(C, N) - 1)) * pow(C, N - rank)
 
     def shuffle(self, chromosomes):
         return sorted(chromosomes.copy(), key=lambda _: random.random())
 
     def sort(self, chromosomes):
-        return sorted(chromosomes.copy(), key=functools.cmp_to_key(self.compare))
+        return sorted(
+            chromosomes.copy(), key=functools.cmp_to_key(self.compare), reverse=True
+        )
 
     def compare(self, chromosome1, chromosome2):
         if chromosome1.fitness < chromosome2.fitness:

@@ -44,9 +44,7 @@ class PopulationFactory:
         start = len(chromosomes)
 
         fitness_list = random.binomial(
-            n=self.fitness_function.b**2, 
-            p=0.5, 
-            size=n - start
+            n=self.fitness_function.b**2, p=0.5, size=n - start
         )
 
         for y in fitness_list:
@@ -67,13 +65,13 @@ class PopulationFactory:
             chromosomes = [self.fitness_function.generate_optimal(l)]
         else:
             chromosomes = []
-        
+
         key = len(chromosomes)
 
         fitness_list = random.binomial(
             n=math.exp(self.fitness_function.b * self.fitness_function.c),
             p=0.5,
-            size=n - key
+            size=n - key,
         )
 
         for y in fitness_list:
@@ -92,11 +90,7 @@ class PopulationFactory:
             chromosomes = []
         start = len(chromosomes)
 
-        fitness_list = random.binomial(
-            n=5.12**2, 
-            p=0.5, 
-            size=n - start
-        )
+        fitness_list = random.binomial(n=5.12**2, p=0.5, size=n - start)
 
         for y in fitness_list:
             x = round(math.sqrt(5.12**2 - y), 2)

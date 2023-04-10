@@ -47,7 +47,7 @@ def gray_to_decimal(gray):
 
 
 def binary_to_decimal(binary):
-    binary = ''.join(binary)
+    binary = "".join(binary)
     return int(binary, 2)
 
 
@@ -75,11 +75,12 @@ def decode(code, a, b, m):
     step = (b - a) / (math.pow(2, m) - 1)
     n = gray_to_decimal(code) if ENCODING == "gray" else binary_to_decimal(code)
     x = round(a + n * step, 2)
-    return x 
+    return x
 
 
 def ints2chars(ints):
     return [str(i) for i in ints]
+
 
 def chars2ints(chars):
     return [int(c) for c in chars]

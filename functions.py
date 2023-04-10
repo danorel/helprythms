@@ -95,7 +95,7 @@ class Fx2:
 
     def check_chromosome_success(self, chromosome: Chromosome):
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
-        y = self.score(x) 
+        y = self.score(x)
         return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
 
 
@@ -103,7 +103,7 @@ class F5122subx2:
     def __init__(self, a: float, b: float):
         self.a = a
         self.b = b
-        self.extremum_x = 0 
+        self.extremum_x = 0
         self.extremum_y = 0
         self.factory = PopulationFactory(self)
 
@@ -130,7 +130,7 @@ class F5122subx2:
 
     def check_chromosome_success(self, chromosome: Chromosome):
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
-        y = self.score(x) 
+        y = self.score(x)
         return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
 
 
@@ -166,5 +166,5 @@ class Fecx:
 
     def check_chromosome_success(self, chromosome: Chromosome):
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
-        y = self.score(x) 
+        y = self.score(x)
         return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA

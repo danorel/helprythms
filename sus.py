@@ -33,20 +33,22 @@ class RankExponentialSUS:
         self.c = 0.95
 
     def exponential_sus(self, population: Population):
-        probabilities = 0
+        probabilities_total = 0
         probability_scale = []
 
-        size = len(population.chromosomes)
+        N = len(population.fitness_list)
 
-        for index in range(1, size + 1):
-            probability = self.scale(size, index)
-            probabilities += probability
-            if index == 1:
+        ranks = list(map(lambda index: N - index, range(0, N)))
+        probabilities = list(map(lambda rank: self.scale(N, rank), ranks))
+
+        for index, probability in enumerate(probabilities):
+            probabilities_total += probability
+            if index == 0:
                 probability_scale.append(probability)
             else:
-                probability_scale.append(probability + probability_scale[index - 2])
+                probability_scale.append(probability + probability_scale[index - 1])
 
-        mating_pool = basic_sus(population, probabilities, probability_scale)
+        mating_pool = basic_sus(population, probabilities_total, probability_scale)
         population.update_chromosomes(mating_pool)
 
         return population
@@ -58,14 +60,16 @@ class RankExponentialSUS:
         population.update_chromosomes(chromosomes)
         return self.exponential_sus(population)
 
-    def scale(self, size: int, rank: int):
-        return ((C - 1) / (pow(C, size) - 1)) * pow(C, size - rank)
+    def scale(self, N: int, rank: int):
+        return ((C - 1) / (pow(C, N) - 1)) * pow(C, N - rank)
 
     def shuffle(self, chromosomes):
         return sorted(chromosomes.copy(), key=lambda _: random.random())
 
     def sort(self, chromosomes):
-        return sorted(chromosomes.copy(), key=functools.cmp_to_key(self.compare))
+        return sorted(
+            chromosomes.copy(), key=functools.cmp_to_key(self.compare), reverse=True
+        )
 
     def compare(self, chromosome1, chromosome2):
         if chromosome1.fitness < chromosome2.fitness:

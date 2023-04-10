@@ -75,7 +75,7 @@ class Population:
         chromosomes = ["".join(map(str, genotype)) for genotype in self.genotypes_list]
         total = len(chromosomes)
         unique = len(set(chromosomes))
-        return (unique / total) * 100 <= 100 - percentage 
+        return (unique / total) * 100 <= 100 - percentage
 
     def crossover(self, fitness_function):
         if self.c_m == 0:
@@ -97,18 +97,20 @@ class Population:
 
             crossover_point = int(random.random() * len(parent1.code))
 
-            child_code1 = [*parent1.code[:crossover_point], *parent2.code[crossover_point:]]
+            child_code1 = [
+                *parent1.code[:crossover_point],
+                *parent2.code[crossover_point:],
+            ]
             child_chromosome1 = Chromosome(
-                child_code1,
-                fitness_function.estimate(child_code1),
-                next_key + 1
+                child_code1, fitness_function.estimate(child_code1), next_key + 1
             )
-            
-            child_code2 = [*parent2.code[:crossover_point], *parent1.code[crossover_point:]]
+
+            child_code2 = [
+                *parent2.code[:crossover_point],
+                *parent1.code[crossover_point:],
+            ]
             child_chromosome2 = Chromosome(
-                child_code2,
-                fitness_function.estimate(child_code2),
-                next_key + 2
+                child_code2, fitness_function.estimate(child_code2), next_key + 2
             )
 
             next_chromosomes.append(child_chromosome1)
@@ -151,8 +153,8 @@ class Population:
         return list([chromosome.key for chromosome in self.chromosomes])
 
     def get_chromosomes_copies_count(self, genotype_copy):
-        genotype_copy = ''.join(map(str, genotype_copy))
-        genotypes = [''.join(map(str, genotype)) for genotype in self.genotypes_list]
+        genotype_copy = "".join(map(str, genotype_copy))
+        genotypes = ["".join(map(str, genotype)) for genotype in self.genotypes_list]
         return genotypes.count(genotype_copy)
 
     def update(self):
