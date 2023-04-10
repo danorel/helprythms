@@ -49,13 +49,9 @@ class PopulationFactory:
 
         for y in fitness_list:
             x = round(math.sqrt(y), 2)
-            chromosomes.append(
-                Chromosome(
-                    encode(x, self.fitness_function.a, self.fitness_function.b, l),
-                    float(x**2),
-                    start + 1,
-                )
-            )
+            code = encode(x, self.fitness_function.a, self.fitness_function.b, l)
+            fitness = math.pow(x, 2)
+            chromosomes.append(Chromosome(code, fitness, start + 1))
             start = start + 1
 
         return Population(chromosomes, p_m, c_m)
@@ -75,9 +71,9 @@ class PopulationFactory:
         )
 
         for y in fitness_list:
-            x = round(math.sqrt(y), 2)
+            x = round(math.log(y) / self.fitness_function.c, 2)
             code = encode(x, self.fitness_function.a, self.fitness_function.b, l)
-            fitness = float(math.exp(x * self.fitness_function.c))
+            fitness = math.exp(x * self.fitness_function.c)
             chromosomes.append(Chromosome(code, fitness, key + 1))
             key = key + 1
 
@@ -88,19 +84,16 @@ class PopulationFactory:
             chromosomes = [self.fitness_function.generate_optimal(l)]
         else:
             chromosomes = []
-        start = len(chromosomes)
 
-        fitness_list = random.binomial(n=5.12**2, p=0.5, size=n - start)
+        key = len(chromosomes)
+
+        fitness_list = random.binomial(n=5.12**2, p=0.5, size=n - key)
 
         for y in fitness_list:
             x = round(math.sqrt(5.12**2 - y), 2)
-            chromosomes.append(
-                Chromosome(
-                    encode(x, -5.11, 5.12, l),
-                    math.pow(5.12, 2) - math.pow(x, 2),
-                    start + 1,
-                )
-            )
-            start = start + 1
+            code = encode(x, -5.11, 5.12, l)
+            fitness = math.pow(5.12, 2) - math.pow(x, 2)
+            chromosomes.append(Chromosome(code, fitness, key + 1))
+            key = key + 1
 
         return Population(chromosomes, p_m, c_m)

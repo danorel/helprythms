@@ -141,12 +141,11 @@ class EvoAlgorithm:
             )
             return optimal_chromosomes == N
         else:
-            return any(
-                [
-                    self.fitness_function.check_chromosome_success(p)
-                    for p in self.population.chromosomes
-                ]
-            )
+            success_chromosomes = [
+                self.fitness_function.check_chromosome_success(p)
+                for p in self.population.chromosomes
+            ]
+            return any(success_chromosomes)
 
     @staticmethod
     def calculate_noise(sf):

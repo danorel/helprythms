@@ -75,7 +75,7 @@ class Population:
         chromosomes = ["".join(map(str, genotype)) for genotype in self.genotypes_list]
         total = len(chromosomes)
         unique = len(set(chromosomes))
-        return (unique / total) * 100 <= 100 - percentage
+        return (unique / total) * 100 >= percentage
 
     def crossover(self, fitness_function):
         if self.c_m == 0:
