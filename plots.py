@@ -1,24 +1,14 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from constants import N
 import os
+
+import matplotlib.pyplot as plt
+
+from constants import N
 
 
 def save_line_plot(fitness_func_name, func_name, data, file_name, y_label, iteration):
-    path = (
-        "Function"
-        + "/"
-        + str(N)
-        + "/"
-        + func_name
-        + "/"
-        + fitness_func_name
-        + "/"
-        + str(iteration)
-    )
-
-    if not os.path.exists(path):
-        os.makedirs(path)
+    dir_path = f"Function/{N}/{func_name}/{fitness_func_name}/{str(iteration)}"
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
 
     x = list(range(1, len(data) + 1))
 
@@ -26,27 +16,16 @@ def save_line_plot(fitness_func_name, func_name, data, file_name, y_label, itera
     plt.ylabel(y_label)
     plt.xlabel("generation")
     plt.legend()
-    plt.savefig(path + "/" + file_name + ".png")
+    plt.savefig(f"{dir_path}/{file_name}.png")
     plt.close()
 
 
 def save_lines_plot(
     fitness_func_name, func_name, data_arr, label_arr, file_name, y_label, iteration
 ):
-    path = (
-        "Function"
-        + "/"
-        + str(N)
-        + "/"
-        + func_name
-        + "/"
-        + fitness_func_name
-        + "/"
-        + str(iteration)
-    )
-
-    if not os.path.exists(path):
-        os.makedirs(path)
+    dir_path = f"Function/{N}/{func_name}/{fitness_func_name}/{str(iteration)}"
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
 
     for i in range(0, len(data_arr)):
         data = data_arr[i]
@@ -57,5 +36,5 @@ def save_lines_plot(
     plt.ylabel(y_label)
     plt.xlabel("generation")
     plt.legend()
-    plt.savefig(path + "/" + file_name + ".png")
+    plt.savefig(f"{dir_path}/{file_name}.png")
     plt.close()

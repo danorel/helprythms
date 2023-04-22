@@ -37,14 +37,9 @@ class EvoAlgorithm:
         convergent = self.population.estimate_convergence()
 
         while not convergent and self.iteration < stop:
-            if self.iteration < iterations_to_plot and run < iterations_to_plot:
-                self.fitness_function.draw_histograms(
-                    population=self.population,
-                    folder_name=folder_name,
-                    func_name=self.selection_function.__class__.__name__,
-                    run=run + 1,
-                    iteration=self.iteration + 1,
-                )
+            if run < iterations_to_plot and self.iteration < iterations_to_plot:
+                self.population.print_phenotypes_distribution(folder_name, self.selection_function.__class__.__name__, run + 1, self.iteration + 1, self.optimal.fitness)
+                self.population.print_genotypes_distribution(folder_name, self.selection_function.__class__.__name__, run + 1, self.iteration + 1, self.fitness_function, self.fitness_function.get_genotype_value(self.optimal.code))
             keys_before_selection = self.population.get_keys_list()
             best_genotype = (
                 self.population.genotypes_list[0]
@@ -99,13 +94,9 @@ class EvoAlgorithm:
         if convergent:
             self.pressure_stats.NI = self.iteration
 
-        self.fitness_function.draw_histograms(
-            population=self.population,
-            folder_name=folder_name,
-            func_name=self.selection_function.__class__.__name__,
-            run=run + 1,
-            iteration=self.iteration + 1,
-        )
+        if run < iterations_to_plot:
+            self.population.print_phenotypes_distribution(folder_name, self.selection_function.__class__.__name__, run + 1, self.iteration, self.optimal.fitness)
+            self.population.print_genotypes_distribution(folder_name, self.selection_function.__class__.__name__, run + 1, self.iteration + 1, self.fitness_function, self.fitness_function.get_genotype_value(self.optimal.code))
 
         self.pressure_stats.takeover_time = self.iteration
         self.pressure_stats.f_found = self.population.get_max_fitness()
