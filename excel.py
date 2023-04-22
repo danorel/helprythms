@@ -1,4 +1,4 @@
-from constants import N
+from constants import N, ENCODING
 import xlsxwriter
 import math
 import os
@@ -21,14 +21,13 @@ def save_to_excel_internal(sheet, dictionary, col_num=1, row_num=2, print_keys=T
     return col_num
 
 
-def save_to_excel(runs_dictionary, selection_func_name):
-    path = "Report" + "/" + str(N) + "/" + selection_func_name
-
+def save_to_excel(runs_dictionary, fitness_function_name):
+    path = f"Function/{N}/{fitness_function_name}/{ENCODING}"
     if not os.path.exists(path):
         os.makedirs(path)
 
     workbook = xlsxwriter.Workbook(
-        path + "/" + selection_func_name + "_" + str(N) + "_data.xlsx"
+        path + "/" + fitness_function_name + "_" + str(N) + "_" + ENCODING + "_data.xlsx"
     )
     worksheet = workbook.add_worksheet()
     worksheet.name = str(N)
@@ -99,14 +98,14 @@ def save_to_excel(runs_dictionary, selection_func_name):
     workbook.close()
 
 
-def save_noise_to_excel(runs_dictionary, selection_func_name):
-    path = "Report" + "/" + str(N) + "/" + selection_func_name
+def save_noise_to_excel(runs_dictionary, fitness_function_name):
+    path = f"Function/{N}/{fitness_function_name}/{ENCODING}"
 
     if not os.path.exists(path):
         os.makedirs(path)
 
     workbook = xlsxwriter.Workbook(
-        path + "/" + selection_func_name + "_" + str(N) + ".xlsx"
+        path + "/" + fitness_function_name + "_" + str(N) + "_" + ENCODING + ".xlsx"
     )
     worksheet = workbook.add_worksheet()
     worksheet.name = str(N)
@@ -172,10 +171,10 @@ def save_noise_to_excel(runs_dictionary, selection_func_name):
 
 
 def save_avg_to_excel(func_runs_dictionary, noise_runs_dictionary):
-    path = "Report" + "/" + str(N) + "/" + "AVG"
+    path = f"Function/{N}/AVG/{ENCODING}"
     if not os.path.exists(path):
         os.makedirs(path)
-    workbook = xlsxwriter.Workbook(path + "/data.xlsx")
+    workbook = xlsxwriter.Workbook(path + "/" + ENCODING + "_" + "data.xlsx")
     worksheet = workbook.add_worksheet()
     worksheet.name = str(N)
     merge_format = workbook.add_format(

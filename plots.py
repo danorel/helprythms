@@ -2,16 +2,16 @@ import os
 
 import matplotlib.pyplot as plt
 
-from constants import N
+from constants import N, ENCODING
 
 
-def save_line_plot(fitness_func_name, func_name, data, file_name, y_label, iteration):
-    dir_path = f"Function/{N}/{func_name}/{fitness_func_name}/{str(iteration)}"
+def save_line_plot(fitness_func_name, selection_name, data, file_name, y_label, iteration):
+    dir_path = f"Function/{N}/{fitness_func_name}/{selection_name}/{ENCODING}/{str(iteration)}"
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
     x = list(range(1, len(data) + 1))
-    plt.plot(x, data, label=func_name)
+    plt.plot(x, data, label=selection_name)
     plt.ylabel(y_label)
     plt.xlabel("generation")
     plt.legend()
@@ -20,9 +20,9 @@ def save_line_plot(fitness_func_name, func_name, data, file_name, y_label, itera
 
 
 def save_lines_plot(
-    fitness_func_name, func_name, data_arr, label_arr, file_name, y_label, iteration
+    fitness_func_name, selection_name, data_arr, label_arr, file_name, y_label, iteration
 ):
-    dir_path = f"Function/{N}/{func_name}/{fitness_func_name}/{str(iteration)}"
+    dir_path = f"Function/{N}/{fitness_func_name}/{selection_name}/{ENCODING}/{str(iteration)}"
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 

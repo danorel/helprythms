@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from chromosome import Chromosome
-from constants import N
+from constants import N, ENCODING
 
 
 class Population:
@@ -19,10 +19,29 @@ class Population:
             map(lambda chromosome: list(chromosome.code), self.chromosomes)
         )
 
-    def print_phenotypes_distribution(
-        self, folder_name, func_name, run, iteration, fitness_function
+    def print_ones_distribution(
+        self, fitness_function_name, selection_name, run, iteration
     ):
-        dir_path = f"Function/{N}/{func_name}/{folder_name}/{run}/phenotypes"
+        dir_path = f"Function/{N}/{fitness_function_name}/{selection_name}/{ENCODING}/{run}/ones"
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+
+        x_list = [genotype_list.count(1) for genotype_list in self.genotypes_list]
+
+        f = plt.figure()
+        plt.hist(x_list, 20, width=5)
+        plt.xlabel("Number of ones")
+        plt.ylabel("Number of individual")
+        plt.title("Counts (ones)")
+        plt.savefig(f"{dir_path}/{iteration}.png")
+        f.clear()
+        plt.close(f)
+
+
+    def print_phenotypes_distribution(
+        self, fitness_function_name, selection_name, run, iteration, fitness_function
+    ):
+        dir_path = f"Function/{N}/{fitness_function_name}/{selection_name}/{ENCODING}/{run}/phenotypes"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
@@ -36,9 +55,9 @@ class Population:
         plt.close(f)
 
     def print_genotypes_distribution(
-        self, folder_name, func_name, run, iteration, fitness_function
+        self, fitness_function_name, selection_name, run, iteration, fitness_function
     ):
-        dir_path = f"Function/{N}/{func_name}/{folder_name}/{run}/genotypes"
+        dir_path = f"Function/{N}/{fitness_function_name}/{selection_name}/{ENCODING}/{run}/genotypes"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 

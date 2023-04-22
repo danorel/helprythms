@@ -42,6 +42,12 @@ class EvoAlgorithm:
 
         while not convergent and self.iteration < stop:
             if run < ITERATIONS_TO_REPORT and self.iteration < ITERATIONS_TO_REPORT:
+                self.population.print_ones_distribution(
+                    folder_name,
+                    self.selection_function.__class__.__name__,
+                    run + 1,
+                    self.iteration + 1,
+                )
                 self.population.print_phenotypes_distribution(
                     folder_name,
                     self.selection_function.__class__.__name__,
@@ -49,13 +55,14 @@ class EvoAlgorithm:
                     self.iteration + 1,
                     self.fitness_function,
                 )
-                self.population.print_genotypes_distribution(
-                    folder_name,
-                    self.selection_function.__class__.__name__,
-                    run + 1,
-                    self.iteration + 1,
-                    self.fitness_function,
-                )
+                if self.fitness_function.__class__.__name__ != "FHD": 
+                    self.population.print_genotypes_distribution(
+                        folder_name,
+                        self.selection_function.__class__.__name__,
+                        run + 1,
+                        self.iteration + 1,
+                        self.fitness_function,
+                    )
             keys_before_selection = self.population.get_keys_list()
             best_genotype = self.population.get_best_genotype()
             f = avg_fitness_list[self.iteration]
@@ -107,6 +114,12 @@ class EvoAlgorithm:
             self.pressure_stats.NI = self.iteration
 
         if run < ITERATIONS_TO_REPORT:
+            self.population.print_ones_distribution(
+                folder_name,
+                self.selection_function.__class__.__name__,
+                run + 1,
+                self.iteration + 1,
+            )
             self.population.print_phenotypes_distribution(
                 folder_name,
                 self.selection_function.__class__.__name__,
@@ -114,13 +127,14 @@ class EvoAlgorithm:
                 self.iteration + 1,
                 self.fitness_function,
             )
-            self.population.print_genotypes_distribution(
-                folder_name,
-                self.selection_function.__class__.__name__,
-                run + 1,
-                self.iteration + 1,
-                self.fitness_function,
-            )
+            if self.fitness_function.__class__.__name__ != "FHD": 
+                self.population.print_genotypes_distribution(
+                    folder_name,
+                    self.selection_function.__class__.__name__,
+                    run + 1,
+                    self.iteration + 1,
+                    self.fitness_function,
+                )
 
         self.pressure_stats.takeover_time = self.iteration
         self.pressure_stats.f_found = self.population.get_max_fitness()
