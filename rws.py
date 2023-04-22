@@ -1,4 +1,3 @@
-import functools
 import random
 
 from constants import C
@@ -21,26 +20,13 @@ class RankExponentialRWS:
 
     def select(self, population: Population):
         chromosomes = population.chromosomes.copy()
-        chromosomes = self.shuffle(chromosomes)
+        random.shuffle(chromosomes)
         chromosomes = self.sort(chromosomes)
         population.update_chromosomes(chromosomes)
         return self.exponential_rws(population)
 
-    def scale(self, N: int, rank: int):
-        return ((C - 1) / (pow(C, N) - 1)) * pow(C, N - rank)
-
-    def shuffle(self, chromosomes):
-        return sorted(chromosomes.copy(), key=lambda _: random.random())
+    def scale(self, size: int, rank: int):
+        return ((C - 1) / (pow(C, size) - 1)) * pow(C, size - rank)
 
     def sort(self, chromosomes):
-        return sorted(
-            chromosomes.copy(), key=functools.cmp_to_key(self.compare), reverse=True
-        )
-
-    def compare(self, chromosome1, chromosome2):
-        if chromosome1.fitness < chromosome2.fitness:
-            return -1
-        elif chromosome1.fitness > chromosome2.fitness:
-            return 1
-        else:
-            return 0
+        return sorted(chromosomes.copy(), key=lambda chromosome: chromosome.fitness, reverse=True)
