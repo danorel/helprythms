@@ -6,7 +6,7 @@ from population import Population
 
 class RankExponentialRWS:
     def exponential_rws(self, population: Population):
-        N = len(population.fitness_list)
+        N = len(population.chromosomes)
 
         ranks = list(map(lambda index: N - index, range(0, N)))
         probabilities = list(map(lambda rank: self.scale(N, rank), ranks))

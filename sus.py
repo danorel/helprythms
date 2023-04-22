@@ -35,7 +35,7 @@ class RankExponentialSUS:
         probabilities_total = 0
         probability_scale = []
 
-        N = len(population.fitness_list)
+        N = len(population.chromosomes)
 
         ranks = list(map(lambda index: N - index, range(0, N)))
         probabilities = list(map(lambda rank: self.scale(N, rank), ranks))

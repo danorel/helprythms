@@ -112,7 +112,7 @@ class EvoAlgorithm:
                 folder_name,
                 self.selection_function.__class__.__name__,
                 run + 1,
-                self.iteration,
+                self.iteration + 1,
                 self.optimal.fitness,
             )
             self.population.print_genotypes_distribution(
@@ -131,6 +131,7 @@ class EvoAlgorithm:
         self.reproduction_stats.calculate()
         self.selection_diff_stats.calculate()
         is_successful = self.check_success() if convergent else False
+
         return Run(
             avg_fitness_list,
             std_fitness_list,

@@ -4,8 +4,6 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 
-from statistics import mean
-
 from chromosome import Chromosome
 from constants import N
 
@@ -13,8 +11,8 @@ from constants import N
 class Population:
     def __init__(self, chromosomes: list[Chromosome], p_m, c_m):
         self.chromosomes = chromosomes
-        self.fitness_list = [chromosome.fitness for chromosome in self.chromosomes]
-        self.genotypes_list = [list(x.code) for x in self.chromosomes]
+        self.phenotypes_list = np.fromiter(map(lambda chromosome: chromosome.fitness, self.chromosomes), dtype=np.float64)
+        self.genotypes_list = list(map(lambda chromosome: list(chromosome.code), self.chromosomes))
         self.p_m = p_m
         self.c_m = c_m
 
@@ -28,7 +26,7 @@ class Population:
         f = plt.figure()
         plt.ylim(0, len(self.chromosomes) * 1.1)
         plt.xlim(0, xAxisMax * 1.1)
-        plt.hist(self.fitness_list, 20, width=xAxisMax / 30)
+        plt.hist(self.phenotypes_list, 20, width=xAxisMax / 30)
         plt.xlabel("Health")
         plt.ylabel("Num of individual")
         plt.title("Phenotypes (fitness)")
@@ -134,35 +132,27 @@ class Population:
         self.update()
 
     def get_mean_fitness(self):
-        return mean(self.fitness_list)
+        return self.phenotypes_list.mean()
 
     def get_max_fitness(self):
-        return max(self.fitness_list)
-
-    def get_best_genotype(self):
-        max_value = self.get_max_fitness()
-        best_list = list(
-            filter(
-                lambda x: self.fitness_list[x] == max_value,
-                range(len(self.fitness_list)),
-            )
-        )
-        return self.genotypes_list[best_list[0]]
+        return self.phenotypes_list.max()
 
     def get_fitness_std(self):
-        return np.std(self.fitness_list)
+        return self.phenotypes_list.std()
+
+    def get_best_genotype(self):
+        max_index = self.phenotypes_list.argmax()
+        return self.genotypes_list[max_index]
 
     def get_keys_list(self):
-        return list([chromosome.key for chromosome in self.chromosomes])
+        return list(map(lambda chromosome: chromosome.key, self.chromosomes))
 
     def get_chromosomes_copies_count(self, genotype_copy):
-        genotype_copy = "".join(map(str, genotype_copy))
-        genotypes = ["".join(map(str, genotype)) for genotype in self.genotypes_list]
-        return genotypes.count(genotype_copy)
+        return self.genotypes_list.count(genotype_copy)
 
     def update(self):
-        self.fitness_list = [chromosome.fitness for chromosome in self.chromosomes]
-        self.genotypes_list = [list(x.code) for x in self.chromosomes]
+        self.phenotypes_list = np.fromiter(map(lambda chromosome: chromosome.fitness, self.chromosomes), dtype=np.float64)
+        self.genotypes_list = list(map(lambda chromosome: list(chromosome.code), self.chromosomes))
 
     def update_rws(self, probabilities):
         self.chromosomes = [

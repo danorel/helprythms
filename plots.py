@@ -11,8 +11,7 @@ def save_line_plot(fitness_func_name, func_name, data, file_name, y_label, itera
         os.makedirs(dir_path)
 
     x = list(range(1, len(data) + 1))
-
-    plt.bar(x, 100, width=1, data=data, label=func_name)
+    plt.plot(x, data, label=func_name)
     plt.ylabel(y_label)
     plt.xlabel("generation")
     plt.legend()
@@ -31,7 +30,7 @@ def save_lines_plot(
         data = data_arr[i]
         label = label_arr[i]
         x = list(range(1, len(data) + 1))
-        plt.bar(x, 100, width=1, data=data, label=label)
+        plt.plot(x, data, label=label)
 
     plt.ylabel(y_label)
     plt.xlabel("generation")
