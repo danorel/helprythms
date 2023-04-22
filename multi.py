@@ -1,7 +1,9 @@
 import time
 
+from tqdm import tqdm
+
 from multiprocessing import Pool
-from constants import P_M, P_C, env
+from constants import P_M, P_C, MAX_RUNS, env
 from functions import *
 from rws import RankExponentialRWS
 from sus import RankExponentialSUS
@@ -10,60 +12,64 @@ from program import main, main_noise
 from excel import save_avg_to_excel
 
 
-release_sm = [RankExponentialSUS, RankExponentialRWS]
-testing_sm = [RankExponentialSUS, RankExponentialRWS]
-selection_methods = testing_sm if env == "test" else release_sm
-# release_functions = [
-#     (FH(), selection_methods, "FH", N, 100, 0, 0),
-#     (FH(), selection_methods, "FH_pm", N, 100, P_M, 0),
-#     (FH(), selection_methods, "FH_pc", N, 100, 0, P_C),
-#     (FH(), selection_methods, "FH_pmpc", N, 100, P_M, P_C),
-#     (FHD(100), selection_methods, "FHD", N, 100, 0, 0),
-#     (FHD(100), selection_methods, "FHD_pm", N, 100, P_M, 0),
-#     (FHD(100), selection_methods, "FHD_pc", N, 100, 0, P_C),
-#     (FHD(100), selection_methods, "FHD_pmpc", N, 100, P_M, P_C),
-#     (Fx2(0, 10.23), selection_methods, "Fx2", N, 10, 0, 0),
-#     (Fx2(0, 10.23), selection_methods, "Fx2_pm", N, 10, P_M, 0),
-#     (Fx2(0, 10.23), selection_methods, "Fx2_pc", N, 10, 0, P_C),
-#     (Fx2(0, 10.23), selection_methods, "Fx2_pmpc", N, 10, P_M, P_C),
-#     (F5122subx2(-5.11, 5.12), selection_methods, "512subx2", N, 10, 0, 0),
-#     (F5122subx2(-5.11, 5.12), selection_methods, "512subx2_pm", N, 10, P_M, 0),
-#     (F5122subx2(-5.11, 5.12), selection_methods, "512subx2_pc", N, 10, 0, P_C),
-#     (F5122subx2(-5.11, 5.12), selection_methods, "512subx2_pmpc", N, 10, P_M, P_C),
-#     (Fecx(0, 10.23, 0.25), selection_methods, "Fec025x", N, 10, 0, 0),
-#     (Fecx(0, 10.23, 0.25), selection_methods, "Fec025x_pm", N, 10, P_M, 0),
-#     (Fecx(0, 10.23, 0.25), selection_methods, "Fec025x_pc", N, 10, 0, P_C),
-#     (Fecx(0, 10.23, 0.25), selection_methods, "Fec025x_pmpc", N, 10, P_M, P_C),
-#     (Fecx(0, 10.23, 1), selection_methods, "Fec1x", N, 10, 0, 0),
-#     (Fecx(0, 10.23, 1), selection_methods, "Fec1x_pm", N, 10, P_M, 0),
-#     (Fecx(0, 10.23, 1), selection_methods, "Fec1x_pc", N, 10, 0, P_C),
-#     (Fecx(0, 10.23, 1), selection_methods, "Fec1x_pmpc", N, 10, P_M, P_C),
-#     (Fecx(0, 10.23, 2), selection_methods, "Fec2x", N, 10, 0, 0),
-#     (Fecx(0, 10.23, 2), selection_methods, "Fec2x_pm", N, 10, P_M, 0),
-#     (Fecx(0, 10.23, 2), selection_methods, "Fec2x_pc", N, 10, 0, P_C),
-#     (Fecx(0, 10.23, 2), selection_methods, "Fec2x_pmpc", N, 10, P_M, P_C),
-# ]
-release_functions = (
-    (FHD(100), selection_methods, "FHD", N, 100, 0, 0),
-    (FHD(100), selection_methods, "FHD_pc", N, 100, 0, P_C),
-    (FHD(100), selection_methods, "FHD_pm", N, 100, 0.00001, 0),
-    (FHD(100), selection_methods, "FHD_pmpc", N, 100, 0.00001, P_C),
-    (Fx2(0, 10.23), selection_methods, "Fx2", N, 10, 0, 0),
-    (Fx2(0, 10.23), selection_methods, "Fx2_pm", N, 10, 0.0001, 0),
-    (Fx2(0, 10.23), selection_methods, "Fx2_pc", N, 10, 0, P_C),
-    (Fx2(0, 10.23), selection_methods, "Fx2_pmpc", N, 10, 0.0001, P_C),
-    (F5122subx2(-5.11, 5.12), selection_methods, "512subx2", N, 10, 0, 0),
-    (F5122subx2(-5.11, 5.12), selection_methods, "512subx2_pm", N, 10, 0.0001, 0),
-    (F5122subx2(-5.11, 5.12), selection_methods, "512subx2_pc", N, 10, 0, P_C),
-    (F5122subx2(-5.11, 5.12), selection_methods, "512subx2_pmpc", N, 10, 0.0001, P_C),
-)
-test_functions = [
-    # (FHD(delta=100), selection_methods, 'FHD', N, 100, 0.00005, 0)
-    # (FH(), selection_methods, "FH_pm", N, 100, P_M, P_C),
-    # (Fecx(0, 10.23, 1), selection_methods, "Fecx_pm", N, 10, P_M, P_C),
-    (Fx2(0, 10.23), selection_methods, "Fx2_pm", N, 10, P_M, P_C),
+selection_methods = [RankExponentialSUS, RankExponentialRWS]
+
+fhd_arguments = [
+    (selection_methods, "FHD", 0, 0),
+    (selection_methods, "FHD_pc", 0, P_C),
+    (selection_methods, "FHD_pm", 0.00001, 0),
+    (selection_methods, "FHD_pmpc", 0.00001, P_C),
 ]
-functions = test_functions if env == "test" else release_functions
+fhd_fitness_config = (FHD(100), N, 100)
+
+fx2_arguments = [
+    (selection_methods, "Fx2", 0, 0),
+    (selection_methods, "Fx2_pm", 0.0001, 0),
+    (selection_methods, "Fx2_pc", 0, P_C),
+    (selection_methods, "Fx2_pmpc", 0.0001, P_C),
+]
+fx2_fitness_config = (Fx2(0, 10.23), N, 10)
+
+f5122subx2_arguments = [
+    (selection_methods, "512subx2", 0, 0),
+    (selection_methods, "512subx2_pm", 0.0001, 0),
+    (selection_methods, "512subx2_pc", 0, P_C),
+    (selection_methods, "512subx2_pmpc", 0.0001, P_C),
+]
+f5122subx2_fitness_config = (F5122subx2(-5.11, 5.12), N, 10)
+
+test_arguments = [
+    [(selection_methods, "Fx2_pm", P_M, P_C)]
+]
+test_fitness_configs = [
+    (Fx2(0, 10.23), N, 10)
+]
+
+release_arguments = [
+    fhd_arguments,
+    fx2_arguments,
+    f5122subx2_arguments
+]
+relase_fitness_configs = [
+    fhd_fitness_config,
+    fx2_fitness_config,
+    f5122subx2_fitness_config
+]
+
+def run_functions(fitness_config, arguments):
+    file_names = []
+    runs_dicts = []
+
+    fitness_function, *population_arguments = fitness_config
+
+    for run in tqdm(range(MAX_RUNS)):
+        initial_population = fitness_function.generate_population(*population_arguments)
+        for argument in arguments:
+            file_name, run_dict = main(run, fitness_function, initial_population, *argument)
+            file_names.append(file_name)
+            runs_dicts.append(run_dict)
+
+    return file_names, runs_dicts
 
 
 if __name__ == "__main__":
@@ -72,11 +78,17 @@ if __name__ == "__main__":
     func_runs = {}
     noise_runs = {}
 
-    with Pool(6) as p:
-        for file_name, run in p.starmap(main, functions):
-            func_runs[file_name] = run
+    fitness_configs = test_fitness_configs if env == "test" else relase_fitness_configs 
+    arguments = test_arguments if env == "test" else release_arguments
 
-        noise_runs["FConst"] = main_noise(selection_methods)
+    properties = [(fitness_config, argument) for fitness_config, argument in zip(fitness_configs, arguments)]
+
+    with Pool(6) as p:
+        for file_names, runs in p.starmap(run_functions, properties):
+            for file_name, run in zip(file_names, runs):
+                func_runs[file_name] = run
+
+        noise_runs["FConst"] = main_noise(selection_methods, 0, 0)
 
         save_avg_to_excel(func_runs, noise_runs)
 

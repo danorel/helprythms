@@ -6,8 +6,8 @@ from tqdm import tqdm
 from constants import MAX_RUNS
 from run import Run
 from runs_stats import RunsStats
+from functions import Fconst 
 from evoalgorithm import EvoAlgorithm
-from population import Population
 from excel import save_to_excel, save_noise_to_excel
 from plots import *
 
@@ -84,7 +84,14 @@ def save_run_plots(ff_name, sf_name, run, iteration):
     )
 
 
-def main(fitness_function, selection_functions: list, file_name, *args):
+def main(
+    run: int,
+    fitness_function,
+    initial_population,
+    selection_functions: list,
+    file_name,
+    *args,
+):
     p_start = time.time()
     runs_dict = {}
     ff_name = fitness_function.__class__.__name__
@@ -92,60 +99,59 @@ def main(fitness_function, selection_functions: list, file_name, *args):
     for selection_function in selection_functions:
         runs_dict[selection_function.__name__] = RunsStats()
 
-    initial_population = fitness_function.generate_population(*args)
+    print(f"{file_name}, {run} run: is starting...")
 
-    print(f"[{file_name}]: has started")
-    for i in tqdm(range(MAX_RUNS)):
-        for selection_function in selection_functions:
-            p = copy(initial_population)
-            sf_name = selection_function.__name__
-            sf = selection_function()
-            optimal = fitness_function.get_optimal(*args)
-            folder_name = file_name if file_name is not None else ff_name
-            current_run = EvoAlgorithm(
-                p,
-                sf,
-                fitness_function,
-                optimal,
-            ).run(i, folder_name, 5)
-            save_run_plots(folder_name, sf_name, current_run, i)
-            runs_dict[sf_name].runs.append(current_run)
+    for selection_function in selection_functions:
+        p = copy(initial_population)
+        sf_name = selection_function.__name__
+        sf = selection_function()
+        optimal = fitness_function.get_optimal(*args)
+        folder_name = file_name if file_name is not None else ff_name
+        current_run = EvoAlgorithm(p, sf, fitness_function, optimal, *args).run(
+            run, folder_name, 5
+        )
+        save_run_plots(folder_name, sf_name, current_run, run)
+        runs_dict[sf_name].runs.append(current_run)
 
     for selection_function in selection_functions:
         runs_dict[selection_function.__name__].calculate()
 
-    print(f"[{file_name}]: saving reports")
+    print(f"{file_name}, {run} run: saving reports...")
     save_to_excel(runs_dict, file_name if file_name is not None else ff_name)
 
     p_end = time.time()
-    print(f"[{file_name}]: terminated (in sec.): {str(p_end - p_start)}")
+    print(f"{file_name}, {run} run: finished in {str(p_end - p_start)} seconds...")
 
     return file_name, runs_dict
 
 
-def main_noise(selection_functions: []):
+def main_noise(selection_functions: list, *args):
     p_start = time.time()
     runs_dict = {}
-    file_name = "FConst"
+
+    fitness_function = Fconst()
+    file_name = fitness_function.__class__.__name__
 
     for selection_function in selection_functions:
         runs_dict[selection_function.__name__] = RunsStats()
 
-    print(f"[{file_name}]: has started")
+    print(f"{file_name}: is starting...")
     for _ in tqdm(range(MAX_RUNS)):
+        initial_population = fitness_function.generate_population(N, 100)
         for selection_function in selection_functions:
+            p = copy(initial_population) 
             sf_name = selection_function.__name__
             sf = selection_function()
-            ns = EvoAlgorithm.calculate_noise(sf)
+            ns = EvoAlgorithm.calculate_noise(p, fitness_function, sf, *args)
             runs_dict[sf_name].runs.append(Run(noise_stats=ns))
 
     for selection_function in selection_functions:
         runs_dict[selection_function.__name__].calculate_noise_stats()
 
-    print(f"[{file_name}]: saving reports")
+    print(f"{file_name}: saving reports...")
     save_noise_to_excel(runs_dict, file_name)
 
     p_end = time.time()
-    print(f"[{file_name}]: has terminated (in sec.): {str(p_end - p_start)}")
+    print(f"{file_name}: finished in {str(p_end - p_start)} seconds...")
 
     return runs_dict

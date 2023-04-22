@@ -14,6 +14,8 @@ class EvoAlgorithm:
         selection_function,
         fitness_function,
         optimal,
+        p_m: float | None,
+        p_c: float | None,
     ):
         self.population: Population = initial_population
         self.selection_function = selection_function
@@ -28,13 +30,15 @@ class EvoAlgorithm:
         self.pressure_stats.f_best.append(self.population.get_max_fitness())
         self.fitness_function = fitness_function
         self.optimal = optimal
+        self.p_m = p_m
+        self.p_c = p_c
 
     def run(self, run, folder_name, iterations_to_plot):
         self.iteration = 0
         avg_fitness_list = [self.population.get_mean_fitness()]
         std_fitness_list = [self.population.get_fitness_std()]
         stop = G
-        convergent = self.population.estimate_convergence()
+        convergent = self.population.estimate_convergence(self.p_m)
 
         while not convergent and self.iteration < stop:
             if run < iterations_to_plot and self.iteration < iterations_to_plot:
@@ -64,8 +68,8 @@ class EvoAlgorithm:
                 keys_after_selection
             )
 
-            self.population.crossover(self.fitness_function)
-            self.population.mutate(self.fitness_function)
+            self.population.crossover(self.fitness_function, self.p_c)
+            self.population.mutate(self.fitness_function, self.p_m)
 
             f_std = self.population.get_fitness_std()
             std_fitness_list.append(f_std)
@@ -98,7 +102,7 @@ class EvoAlgorithm:
             if num_of_best >= N / 2 and self.pressure_stats.grl is None:
                 self.pressure_stats.grli = self.iteration
                 self.pressure_stats.grl = self.pressure_stats.grs[-1]
-            convergent = self.population.estimate_convergence()
+            convergent = self.population.estimate_convergence(self.p_m)
 
         if convergent:
             self.pressure_stats.NI = self.iteration
@@ -154,20 +158,20 @@ class EvoAlgorithm:
             return any(success_chromosomes)
 
     @staticmethod
-    def calculate_noise(sf):
-        pop = Fconst().generate_population(N, 100, 0, 0)
-        population = Population(pop.chromosomes.copy(), pop.p_m, pop.p_c)
+    def calculate_noise(p, fitness_function, sf, p_m, p_c): 
         iteration = 0
         stop = G
 
-        while not population.estimate_convergence() and iteration < stop:
-            population = sf.select(population)
+        while not p.estimate_convergence(p_m) and iteration < stop:
+            p = sf.select(p)
+            p.crossover(fitness_function, p_c) 
+            p.mutate(fitness_function, p_m) 
             iteration += 1
 
         ns = NoiseStats()
 
-        if population.estimate_convergence():
+        if p.estimate_convergence(p_m):
             ns.NI = iteration
-            ns.conv_to = population.chromosomes[0].code[0]
+            ns.conv_to = p.chromosomes[0].code[0]
 
         return ns

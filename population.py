@@ -9,7 +9,7 @@ from constants import N
 
 
 class Population:
-    def __init__(self, chromosomes: list[Chromosome], p_m, p_c):
+    def __init__(self, chromosomes: list[Chromosome]):
         self.chromosomes = chromosomes
         self.phenotypes_list = np.fromiter(
             map(lambda chromosome: chromosome.fitness, self.chromosomes),
@@ -18,8 +18,6 @@ class Population:
         self.genotypes_list = list(
             map(lambda chromosome: list(chromosome.code), self.chromosomes)
         )
-        self.p_m = p_m
-        self.p_c = p_c
 
     def print_phenotypes_distribution(
         self, folder_name, func_name, run, iteration, xAxisMax
@@ -62,8 +60,8 @@ class Population:
         f.clear()
         plt.close(f)
 
-    def estimate_convergence(self):
-        if self.p_m == 0:
+    def estimate_convergence(self, p_m):
+        if p_m == 0:
             return self.is_identical
         else:
             return self.is_homogeneous(percentage=99)
@@ -83,8 +81,8 @@ class Population:
         genotypes = {"".join(map(str, genotype)) for genotype in self.genotypes_list}
         return len(genotypes) == 1
 
-    def crossover(self, fitness_function):
-        if self.p_c == 0:
+    def crossover(self, fitness_function, p_c):
+        if p_c == 0:
             return
 
         next_chromosomes = []
@@ -126,12 +124,12 @@ class Population:
 
         self.update_chromosomes(next_chromosomes)
 
-    def mutate(self, fitness_function):
-        if self.p_m == 0:
+    def mutate(self, fitness_function, p_m):
+        if p_m == 0:
             return
         for chromosome in self.chromosomes:
             for i in range(0, len(chromosome.code)):
-                if random.random() < self.p_m:
+                if random.random() < p_m:
                     chromosome.code[i] = int(not chromosome.code[i])
                     chromosome.fitness = fitness_function.estimate(chromosome.code)
         self.update()
@@ -177,4 +175,4 @@ class Population:
         self.update()
 
     def __copy__(self):
-        return Population(self.chromosomes.copy(), self.p_m, self.p_c)
+        return Population(self.chromosomes.copy())
