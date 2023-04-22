@@ -146,8 +146,9 @@ class Population:
         return self.phenotypes_list.std()
 
     def get_best_genotype(self):
-        max_index = self.phenotypes_list.argmax()
-        return self.genotypes_list[max_index]
+        best_index = self.phenotypes_list.argmax()
+        best_genotype = self.genotypes_list[best_index]
+        return best_genotype
 
     def get_keys_list(self):
         return list(map(lambda chromosome: chromosome.key, self.chromosomes))

@@ -21,7 +21,7 @@ class EvoAlgorithm:
         self.pressure_stats = PressureStats()
         self.reproduction_stats = ReproductionStats()
         self.selection_diff_stats = SelectionDiffStats()
-        self.best = self.population.genotypes_list[0]
+        self.best = self.population.get_best_genotype()
         self.pressure_stats.num_of_best.append(
             self.population.genotypes_list.count(self.best)
         )
