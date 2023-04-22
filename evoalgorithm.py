@@ -144,7 +144,7 @@ class EvoAlgorithm:
 
     def check_success(self):
         ff_name = self.fitness_function.__class__.__name__
-        if ff_name == "FH" or ff_name == "FHD":
+        if ff_name == "FHD":
             optimal_chromosome = list(self.optimal.code)
             optimal_chromosomes = self.population.get_chromosomes_copies_count(
                 optimal_chromosome

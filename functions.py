@@ -7,29 +7,6 @@ from population_factory import PopulationFactory
 from coding import *
 
 
-class FH:
-    def __init__(self):
-        self.factory = PopulationFactory(self)
-
-    def estimate(self, chromosome_code):
-        l = len(chromosome_code)
-        k = np.count_nonzero(chromosome_code)
-        return l - k
-
-    def get_genotype_value(self, chromosome_code):
-        k = np.count_nonzero(chromosome_code)
-        return k
-
-    def generate_optimal(self, length):
-        return Chromosome(np.zeros((length,), dtype=int), length)
-
-    def get_optimal(self, n, l):
-        return self.generate_optimal(l)
-
-    def generate_population(self, n, l):
-        return self.factory.generate(n, l)
-
-
 class FHD:
     def __init__(self, delta: float = 100.0):
         self.delta = delta
@@ -41,7 +18,7 @@ class FHD:
 
     def estimate(self, chromosome_code):
         l = len(chromosome_code)
-        k = np.count_nonzero(chromosome_code)
+        k = l - np.count_nonzero(chromosome_code)
         return (l - k) + k * self.delta
 
     def generate_optimal(self, length):
@@ -109,8 +86,8 @@ class F5122subx2:
     def __init__(self, a: float, b: float):
         self.a = a
         self.b = b
-        self.extremum_x = 0
-        self.extremum_y = 0
+        self.extremum_x = 0 
+        self.extremum_y = math.pow(5.12, 2)
         self.factory = PopulationFactory(self)
 
     def score(self, x: float):
