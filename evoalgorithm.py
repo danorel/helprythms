@@ -54,11 +54,7 @@ class EvoAlgorithm:
                     self.fitness_function.get_genotype_value(self.optimal.code),
                 )
             keys_before_selection = self.population.get_keys_list()
-            best_genotype = (
-                self.population.genotypes_list[0]
-                if run < 5 or self.population.p_m == 0
-                else self.population.get_best_genotype()
-            )
+            best_genotype = self.population.get_best_genotype()
             f = avg_fitness_list[self.iteration]
 
             self.population = self.selection_function.select(self.population)
@@ -160,7 +156,7 @@ class EvoAlgorithm:
     @staticmethod
     def calculate_noise(sf):
         pop = Fconst().generate_population(N, 100, 0, 0)
-        population = Population(pop.chromosomes.copy(), pop.p_m, pop.c_m)
+        population = Population(pop.chromosomes.copy(), pop.p_m, pop.p_c)
         iteration = 0
         stop = G
 

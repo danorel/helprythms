@@ -1,5 +1,6 @@
 import time
 
+from copy import copy
 from tqdm import tqdm
 
 from constants import MAX_RUNS
@@ -91,17 +92,18 @@ def main(fitness_function, selection_functions: list, file_name, *args):
     for selection_function in selection_functions:
         runs_dict[selection_function.__name__] = RunsStats()
 
+    initial_population = fitness_function.generate_population(*args)
+
     print(f"[{file_name}]: has started")
     for i in tqdm(range(MAX_RUNS)):
-        p = fitness_function.generate_population(*args, i=i)
-
         for selection_function in selection_functions:
+            p = copy(initial_population)
             sf_name = selection_function.__name__
             sf = selection_function()
-            optimal = fitness_function.get_optimal(*args, i=i)
+            optimal = fitness_function.get_optimal(*args)
             folder_name = file_name if file_name is not None else ff_name
             current_run = EvoAlgorithm(
-                Population(p.chromosomes.copy(), p.p_m, p.c_m),
+                p,
                 sf,
                 fitness_function,
                 optimal,

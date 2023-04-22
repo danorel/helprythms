@@ -9,12 +9,17 @@ from constants import N
 
 
 class Population:
-    def __init__(self, chromosomes: list[Chromosome], p_m, c_m):
+    def __init__(self, chromosomes: list[Chromosome], p_m, p_c):
         self.chromosomes = chromosomes
-        self.phenotypes_list = np.fromiter(map(lambda chromosome: chromosome.fitness, self.chromosomes), dtype=np.float64)
-        self.genotypes_list = list(map(lambda chromosome: list(chromosome.code), self.chromosomes))
+        self.phenotypes_list = np.fromiter(
+            map(lambda chromosome: chromosome.fitness, self.chromosomes),
+            dtype=np.float64,
+        )
+        self.genotypes_list = list(
+            map(lambda chromosome: list(chromosome.code), self.chromosomes)
+        )
         self.p_m = p_m
-        self.c_m = c_m
+        self.p_c = p_c
 
     def print_phenotypes_distribution(
         self, folder_name, func_name, run, iteration, xAxisMax
@@ -79,7 +84,7 @@ class Population:
         return len(genotypes) == 1
 
     def crossover(self, fitness_function):
-        if self.c_m == 0:
+        if self.p_c == 0:
             return
 
         next_chromosomes = []
@@ -151,8 +156,13 @@ class Population:
         return self.genotypes_list.count(genotype_copy)
 
     def update(self):
-        self.phenotypes_list = np.fromiter(map(lambda chromosome: chromosome.fitness, self.chromosomes), dtype=np.float64)
-        self.genotypes_list = list(map(lambda chromosome: list(chromosome.code), self.chromosomes))
+        self.phenotypes_list = np.fromiter(
+            map(lambda chromosome: chromosome.fitness, self.chromosomes),
+            dtype=np.float64,
+        )
+        self.genotypes_list = list(
+            map(lambda chromosome: list(chromosome.code), self.chromosomes)
+        )
 
     def update_rws(self, probabilities):
         self.chromosomes = [
@@ -166,4 +176,4 @@ class Population:
         self.update()
 
     def __copy__(self):
-        return Population(self.chromosomes.copy(), self.p_m.copy())
+        return Population(self.chromosomes.copy(), self.p_m, self.p_c)

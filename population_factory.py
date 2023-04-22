@@ -7,7 +7,7 @@ class PopulationFactory:
     def __init__(self, fitness_function):
         self.fitness_function = fitness_function
 
-    def generate_population_fh(self, n, l, p_m, c_m, i):
+    def generate_population_fh(self, n, l, p_m, c_m):
         chromosomes = [self.fitness_function.generate_optimal(l)]
 
         start = len(chromosomes)
@@ -19,7 +19,7 @@ class PopulationFactory:
 
         return Population(chromosomes, p_m, c_m)
 
-    def generate_population_fhd(self, n, l, p_m, c_m, i):
+    def generate_population_fhd(self, n, l, p_m, c_m):
         chromosomes = [self.fitness_function.generate_optimal(l)]
 
         start = len(chromosomes)
@@ -31,7 +31,7 @@ class PopulationFactory:
 
         return Population(chromosomes, p_m, c_m)
 
-    def generate_population_fx2(self, n, l, p_m, c_m, i):
+    def generate_population_fx2(self, n, l, p_m, c_m):
         chromosomes = [self.fitness_function.generate_optimal(l)]
 
         start = len(chromosomes)
@@ -43,7 +43,7 @@ class PopulationFactory:
 
         return Population(chromosomes, p_m, c_m)
 
-    def generate_population_fecx(self, n, l, p_m, c_m, i):
+    def generate_population_fecx(self, n, l, p_m, c_m):
         chromosomes = [self.fitness_function.generate_optimal(l)]
 
         start = len(chromosomes)
@@ -55,7 +55,7 @@ class PopulationFactory:
 
         return Population(chromosomes, p_m, c_m)
 
-    def generate_population_f5122subx2(self, n, l, p_m, c_m, i):
+    def generate_population_f5122subx2(self, n, l, p_m, c_m):
         chromosomes = [self.fitness_function.generate_optimal(l)]
 
         start = len(chromosomes)
