@@ -53,9 +53,9 @@ release_functions = (
     (Fx2(0, 10.23), selection_methods, "Fx2_pc", N, 10, 0, P_C),
     (Fx2(0, 10.23), selection_methods, "Fx2_pmpc", N, 10, 0.0001, P_C),
     (F5122subx2(-5.11, 5.12), selection_methods, "512subx2", N, 10, 0, 0),
-    (F5122subx2(-5.11, 5.12), selection_methods, "512subx2_pm", N, 10,  0.0001, 0),
+    (F5122subx2(-5.11, 5.12), selection_methods, "512subx2_pm", N, 10, 0.0001, 0),
     (F5122subx2(-5.11, 5.12), selection_methods, "512subx2_pc", N, 10, 0, P_C),
-    (F5122subx2(-5.11, 5.12), selection_methods, "512subx2_pmpc", N, 10,  0.0001, P_C),
+    (F5122subx2(-5.11, 5.12), selection_methods, "512subx2_pmpc", N, 10, 0.0001, P_C),
 )
 test_functions = [
     # (FHD(delta=100), selection_methods, 'FHD', N, 100, 0.00005, 0)

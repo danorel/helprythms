@@ -7,7 +7,6 @@ from population_factory import PopulationFactory
 from coding import *
 
 
-
 class FH:
     def __init__(self):
         self.factory = PopulationFactory(self)
@@ -32,7 +31,7 @@ class FH:
 
 
 class FHD:
-    def __init__(self, delta: float = 100.):
+    def __init__(self, delta: float = 100.0):
         self.delta = delta
         self.factory = PopulationFactory(self)
 

@@ -29,4 +29,6 @@ class RankExponentialRWS:
         return ((C - 1) / (pow(C, size) - 1)) * pow(C, size - rank)
 
     def sort(self, chromosomes):
-        return sorted(chromosomes.copy(), key=lambda chromosome: chromosome.fitness, reverse=True)
+        return sorted(
+            chromosomes.copy(), key=lambda chromosome: chromosome.fitness, reverse=True
+        )

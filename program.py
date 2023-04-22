@@ -92,7 +92,7 @@ def main(fitness_function, selection_functions: list, file_name, *args):
         runs_dict[selection_function.__name__] = RunsStats()
 
     print(f"[{file_name}]: has started")
-    for i in tqdm(range(1, MAX_RUNS + 1)):
+    for i in tqdm(range(MAX_RUNS)):
         p = fitness_function.generate_population(*args, i=i)
 
         for selection_function in selection_functions:
@@ -130,7 +130,7 @@ def main_noise(selection_functions: []):
         runs_dict[selection_function.__name__] = RunsStats()
 
     print(f"[{file_name}]: has started")
-    for _ in tqdm(range(1, MAX_RUNS + 1)):
+    for _ in tqdm(range(MAX_RUNS)):
         for selection_function in selection_functions:
             sf_name = selection_function.__name__
             sf = selection_function()
