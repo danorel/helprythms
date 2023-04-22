@@ -8,10 +8,8 @@ class PopulationFactory:
         self.fitness_function = fitness_function
 
     def generate_population_fh(self, n, l, p_m, c_m, i):
-        if i < 5 or p_m == 0:
-            chromosomes = [self.fitness_function.generate_optimal(l)]
-        else:
-            chromosomes = []
+        chromosomes = [self.fitness_function.generate_optimal(l)]
+
         start = len(chromosomes)
 
         for key in range(start, n):
@@ -22,10 +20,8 @@ class PopulationFactory:
         return Population(chromosomes, p_m, c_m)
 
     def generate_population_fhd(self, n, l, p_m, c_m, i):
-        if i < 5 or p_m == 0:
-            chromosomes = [self.fitness_function.generate_optimal(l)]
-        else:
-            chromosomes = []
+        chromosomes = [self.fitness_function.generate_optimal(l)]
+
         start = len(chromosomes)
 
         for key in range(start, n):
@@ -36,10 +32,8 @@ class PopulationFactory:
         return Population(chromosomes, p_m, c_m)
 
     def generate_population_fx2(self, n, l, p_m, c_m, i):
-        if i < 5 or p_m == 0:
-            chromosomes = [self.fitness_function.generate_optimal(l)]
-        else:
-            chromosomes = []
+        chromosomes = [self.fitness_function.generate_optimal(l)]
+        
         start = len(chromosomes)
 
         for key in range(start, n):
@@ -50,10 +44,8 @@ class PopulationFactory:
         return Population(chromosomes, p_m, c_m)
 
     def generate_population_fecx(self, n, l, p_m, c_m, i):
-        if i < 5 or p_m == 0:
-            chromosomes = [self.fitness_function.generate_optimal(l)]
-        else:
-            chromosomes = []
+        chromosomes = [self.fitness_function.generate_optimal(l)]
+        
         start = len(chromosomes)
 
         for key in range(start, n):
@@ -64,10 +56,8 @@ class PopulationFactory:
         return Population(chromosomes, p_m, c_m)
 
     def generate_population_f5122subx2(self, n, l, p_m, c_m, i):
-        if i < 5 or p_m == 0:
-            chromosomes = [self.fitness_function.generate_optimal(l)]
-        else:
-            chromosomes = []
+        chromosomes = [self.fitness_function.generate_optimal(l)]
+        
         start = len(chromosomes)
 
         for key in range(start, n):
