@@ -4,7 +4,7 @@ env = "release"
 MAX_RUNS = 5 if env == "test" else 100
 ITERATIONS_TO_REPORT = 1 if env == "test" else 5
 
-# Genotype: amount of genes / codec.
+# Genotype: amount of chromosomes in population / codec.
 N = 100
 ENCODING = "binary" # "binary" or "gray"
 

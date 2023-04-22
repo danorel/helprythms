@@ -1,7 +1,7 @@
 import numpy as np
 
 from chromosome import Chromosome
-from constants import DELTA, SIGMA
+from constants import DELTA, SIGMA, N
 from population import Population
 from population_factory import PopulationFactory
 from coding import *
@@ -10,6 +10,8 @@ from coding import *
 class FHD:
     def __init__(self, delta: float = 100.0):
         self.delta = delta
+        self.extremum_x = 0
+        self.extremum_y = self.estimate("0"*100) 
         self.factory = PopulationFactory(self)
 
     def get_genotype_value(self, chromosome_code):
@@ -22,7 +24,7 @@ class FHD:
         return (l - k) + k * self.delta
 
     def generate_optimal(self, length):
-        return Chromosome(np.zeros((length,), dtype=int), length * self.delta)
+        return Chromosome(np.zeros((length,), dtype=int), self.extremum_y)
 
     def get_optimal(self, n, l):
         return self.generate_optimal(l)

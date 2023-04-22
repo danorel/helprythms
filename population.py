@@ -20,16 +20,14 @@ class Population:
         )
 
     def print_phenotypes_distribution(
-        self, folder_name, func_name, run, iteration, xAxisMax
+        self, folder_name, func_name, run, iteration, fitness_function
     ):
         dir_path = f"Function/{N}/{func_name}/{folder_name}/{run}/phenotypes"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
         f = plt.figure()
-        plt.ylim(0, len(self.chromosomes) * 1.1)
-        plt.xlim(0, xAxisMax * 1.1)
-        plt.hist(self.phenotypes_list, 20, width=xAxisMax / 30)
+        plt.hist(self.phenotypes_list, 20, width=fitness_function.extremum_y / 30)
         plt.xlabel("Health")
         plt.ylabel("Num of individual")
         plt.title("Phenotypes (fitness)")
@@ -38,21 +36,18 @@ class Population:
         plt.close(f)
 
     def print_genotypes_distribution(
-        self, folder_name, func_name, run, iteration, fitness_func, xAxisMax
+        self, folder_name, func_name, run, iteration, fitness_function
     ):
         dir_path = f"Function/{N}/{func_name}/{folder_name}/{run}/genotypes"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
-        x_list = [fitness_func.get_genotype_value(code) for code in self.genotypes_list]
-
-        if xAxisMax == 0:
-            xAxisMax = len(self.genotypes_list[0])
+        x_list = [fitness_function.get_genotype_value(code) for code in self.genotypes_list]
 
         f = plt.figure()
         plt.ylim(0, len(x_list) * 1.1)
-        plt.xlim(0, xAxisMax * 1.1)
-        plt.hist(x_list, 15, width=xAxisMax / 20)
+        plt.xlim(0, fitness_function.extremum_x * 1.1)
+        plt.hist(x_list, 15, width=fitness_function.extremum_x / 20)
         plt.xlabel("X")
         plt.ylabel("Num of individual")
         plt.title("Genotype (x)")

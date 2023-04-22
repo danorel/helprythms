@@ -47,7 +47,7 @@ class EvoAlgorithm:
                     self.selection_function.__class__.__name__,
                     run + 1,
                     self.iteration + 1,
-                    self.optimal.fitness,
+                    self.fitness_function,
                 )
                 self.population.print_genotypes_distribution(
                     folder_name,
@@ -55,7 +55,6 @@ class EvoAlgorithm:
                     run + 1,
                     self.iteration + 1,
                     self.fitness_function,
-                    self.fitness_function.get_genotype_value(self.optimal.code),
                 )
             keys_before_selection = self.population.get_keys_list()
             best_genotype = self.population.get_best_genotype()
@@ -113,7 +112,7 @@ class EvoAlgorithm:
                 self.selection_function.__class__.__name__,
                 run + 1,
                 self.iteration + 1,
-                self.optimal.fitness,
+                self.fitness_function,
             )
             self.population.print_genotypes_distribution(
                 folder_name,
@@ -121,7 +120,6 @@ class EvoAlgorithm:
                 run + 1,
                 self.iteration + 1,
                 self.fitness_function,
-                self.fitness_function.get_genotype_value(self.optimal.code),
             )
 
         self.pressure_stats.takeover_time = self.iteration
