@@ -67,9 +67,7 @@ class RankExponentialSUS:
         return sorted(chromosomes.copy(), key=lambda _: random.random())
 
     def sort(self, chromosomes):
-        return sorted(
-            chromosomes.copy(), key=functools.cmp_to_key(self.compare), reverse=True
-        )
+        return sorted(chromosomes.copy(), key=lambda chromosome: chromosome.fitness, reverse=True)
 
     def compare(self, chromosome1, chromosome2):
         if chromosome1.fitness < chromosome2.fitness:

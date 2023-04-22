@@ -1,12 +1,8 @@
-import os
 import random
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 from statistics import mean
 
-from constants import N
 from chromosome import Chromosome
 
 
@@ -18,64 +14,26 @@ class Population:
         self.p_m = p_m
         self.c_m = c_m
 
-    def print_phenotypes_distribution(self, folder_name, func_name, run, iteration):
-        path = (
-            "Histogram"
-            + "/"
-            + str(N)
-            + "/"
-            + func_name
-            + "/"
-            + folder_name
-            + "/"
-            + str(run)
-            + "/"
-            + "phenotypes"
-        )
-
-        if not os.path.exists(path):
-            os.makedirs(path)
-
-        sns.displot(self.fitness_list)
-        plt.savefig(path + "/" + str(iteration) + ".png")
-        plt.close()
-
-    def print_genotypes_distribution(
-        self, folder_name, func_name, run, iteration, fitness_func
-    ):
-        path = (
-            "Histogram"
-            + "/"
-            + str(N)
-            + "/"
-            + func_name
-            + "/"
-            + folder_name
-            + "/"
-            + str(run)
-            + "/"
-            + "genotypes"
-        )
-
-        if not os.path.exists(path):
-            os.makedirs(path)
-
-        x_list = [fitness_func.get_genotype_value(code) for code in self.genotypes_list]
-        sns.displot(x_list)
-        plt.savefig(path + "/" + str(iteration) + ".png")
-        plt.close()
-
     def estimate_convergence(self):
         if self.p_m == 0:
-            return self.is_homogeneous(percentage=100)
+            return self.is_identical
         else:
             return self.is_homogeneous(percentage=99)
 
-    def is_homogeneous(self, percentage: float):
+    def is_homogeneous(self, percentage: int) -> bool:
+        assert percentage < 100, (
+            "According to formula: (unique / total) * 100 <= 100 - percentage, "
+            "we can't have percentage >= 100!"
+        )
         chromosomes = ["".join(map(str, genotype)) for genotype in self.genotypes_list]
         total = len(chromosomes)
         unique = len(set(chromosomes))
-        return (unique / total) * 100 >= percentage
+        return (unique / total) * 100 <= 100 - percentage
+
+    @property
+    def is_identical(self) -> bool:
+        genotypes = {"".join(map(str, genotype)) for genotype in self.genotypes_list}
+        return len(genotypes) == 1
 
     def crossover(self, fitness_function):
         if self.c_m == 0:

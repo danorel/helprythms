@@ -8,7 +8,7 @@ N = 100
 ENCODING = "binary"
 
 # Termination condition: maximum amount of iterations.
-G = 5000  # 10000000
+G = 250  # 10000000
 
 # Selection: exponential parameter for Rank selection.
 C = 0.9801

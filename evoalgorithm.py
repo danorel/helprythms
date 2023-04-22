@@ -1,4 +1,3 @@
-import time
 from pressure_stats import PressureStats
 from noise_stats import NoiseStats
 from selection_diff_stats import SelectionDiffStats
@@ -34,23 +33,17 @@ class EvoAlgorithm:
         self.iteration = 0
         avg_fitness_list = [self.population.get_mean_fitness()]
         std_fitness_list = [self.population.get_fitness_std()]
-        stop = 1000 if "Disruptive" in self.selection_function.__class__.__name__ else G
+        stop = G
         convergent = self.population.estimate_convergence()
 
         while not convergent and self.iteration < stop:
-            if self.iteration < iterations_to_plot:
-                self.population.print_phenotypes_distribution(
-                    folder_name,
-                    self.selection_function.__class__.__name__,
-                    run + 1,
-                    self.iteration + 1,
-                )
-                self.population.print_genotypes_distribution(
-                    folder_name,
-                    self.selection_function.__class__.__name__,
-                    run + 1,
-                    self.iteration + 1,
-                    self.fitness_function,
+            if self.iteration < iterations_to_plot and run < iterations_to_plot:
+                self.fitness_function.draw_histograms(
+                    population=self.population,
+                    folder_name=folder_name,
+                    func_name=self.selection_function.__class__.__name__,
+                    run=run + 1,
+                    iteration=self.iteration + 1,
                 )
             keys_before_selection = self.population.get_keys_list()
             best_genotype = (
@@ -59,13 +52,17 @@ class EvoAlgorithm:
                 else self.population.get_best_genotype()
             )
             f = avg_fitness_list[self.iteration]
+
             self.population = self.selection_function.select(self.population)
+
             keys_after_selection = self.population.get_keys_list()
             not_selected_chromosomes = set(keys_before_selection) - set(
                 keys_after_selection
             )
+
             self.population.crossover(self.fitness_function)
             self.population.mutate(self.fitness_function)
+
             f_std = self.population.get_fitness_std()
             std_fitness_list.append(f_std)
             fs = self.population.get_mean_fitness()
@@ -102,19 +99,14 @@ class EvoAlgorithm:
         if convergent:
             self.pressure_stats.NI = self.iteration
 
-        self.population.print_phenotypes_distribution(
-            folder_name,
-            self.selection_function.__class__.__name__,
-            run + 1,
-            self.iteration,
+        self.fitness_function.draw_histograms(
+            population=self.population,
+            folder_name=folder_name,
+            func_name=self.selection_function.__class__.__name__,
+            run=run + 1,
+            iteration=self.iteration + 1,
         )
-        self.population.print_genotypes_distribution(
-            folder_name,
-            self.selection_function.__class__.__name__,
-            run + 1,
-            self.iteration,
-            self.fitness_function,
-        )
+
         self.pressure_stats.takeover_time = self.iteration
         self.pressure_stats.f_found = self.population.get_max_fitness()
         self.pressure_stats.f_avg = self.population.get_mean_fitness()
