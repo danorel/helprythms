@@ -3,7 +3,7 @@ import time
 from copy import copy
 from tqdm import tqdm
 
-from constants import MAX_RUNS
+from constants import MAX_RUNS, ITERATIONS_TO_REPORT
 from run import Run
 from runs_stats import RunsStats
 from functions import Fconst 
@@ -108,16 +108,18 @@ def main(
         optimal = fitness_function.get_optimal(*args)
         folder_name = file_name if file_name is not None else ff_name
         current_run = EvoAlgorithm(p, sf, fitness_function, optimal, *args).run(
-            run, folder_name, 5
+            run, folder_name
         )
-        save_run_plots(folder_name, sf_name, current_run, run)
         runs_dict[sf_name].runs.append(current_run)
+        if run < ITERATIONS_TO_REPORT:
+            save_run_plots(folder_name, sf_name, current_run, run)
 
     for selection_function in selection_functions:
         runs_dict[selection_function.__name__].calculate()
 
-    print(f"{file_name}, {run} run: saving reports...")
-    save_to_excel(runs_dict, file_name if file_name is not None else ff_name)
+    if run < ITERATIONS_TO_REPORT:
+        print(f"{file_name}, {run} run: saving reports...")
+        save_to_excel(runs_dict, file_name if file_name is not None else ff_name)
 
     p_end = time.time()
     print(f"{file_name}, {run} run: finished in {str(p_end - p_start)} seconds...")

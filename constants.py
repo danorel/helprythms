@@ -1,14 +1,15 @@
 env = "release"
 
-# Runs: amount of evolutionary algorithms to probe.
+# Config: amount of evolutionary algorithms / iterations to probe and report.
 MAX_RUNS = 5 if env == "test" else 100
+ITERATIONS_TO_REPORT = 1 if env == "test" else 5
 
 # Genotype: amount of genes / codec.
 N = 100
-ENCODING = "binary"
+ENCODING = "binary" # "binary" or "gray"
 
 # Termination condition: maximum amount of iterations.
-G = 250  # 10000000
+G = 100 if env == "test" else 10000000
 
 # Selection: exponential parameter for Rank selection.
 C = 0.9801

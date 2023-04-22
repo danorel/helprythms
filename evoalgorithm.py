@@ -33,7 +33,7 @@ class EvoAlgorithm:
         self.p_m = p_m
         self.p_c = p_c
 
-    def run(self, run, folder_name, iterations_to_plot):
+    def run(self, run, folder_name):
         self.iteration = 0
         avg_fitness_list = [self.population.get_mean_fitness()]
         std_fitness_list = [self.population.get_fitness_std()]
@@ -41,7 +41,7 @@ class EvoAlgorithm:
         convergent = self.population.estimate_convergence(self.p_m)
 
         while not convergent and self.iteration < stop:
-            if run < iterations_to_plot and self.iteration < iterations_to_plot:
+            if run < ITERATIONS_TO_REPORT and self.iteration < ITERATIONS_TO_REPORT:
                 self.population.print_phenotypes_distribution(
                     folder_name,
                     self.selection_function.__class__.__name__,
@@ -107,7 +107,7 @@ class EvoAlgorithm:
         if convergent:
             self.pressure_stats.NI = self.iteration
 
-        if run < iterations_to_plot:
+        if run < ITERATIONS_TO_REPORT:
             self.population.print_phenotypes_distribution(
                 folder_name,
                 self.selection_function.__class__.__name__,
