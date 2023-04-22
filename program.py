@@ -1,3 +1,7 @@
+import time
+
+from tqdm import tqdm
+
 from constants import MAX_RUNS
 from run import Run
 from runs_stats import RunsStats
@@ -5,7 +9,6 @@ from evoalgorithm import EvoAlgorithm
 from population import Population
 from excel import save_to_excel, save_noise_to_excel
 from plots import *
-import time
 
 
 def save_run_plots(ff_name, sf_name, run, iteration):
@@ -88,7 +91,8 @@ def main(fitness_function, selection_functions: list, file_name, *args):
     for selection_function in selection_functions:
         runs_dict[selection_function.__name__] = RunsStats()
 
-    for i in range(0, MAX_RUNS):
+    print(f"[{file_name}]: has started")
+    for i in tqdm(range(1, MAX_RUNS + 1)):
         p = fitness_function.generate_population(*args, i=i)
 
         for selection_function in selection_functions:
@@ -108,10 +112,11 @@ def main(fitness_function, selection_functions: list, file_name, *args):
     for selection_function in selection_functions:
         runs_dict[selection_function.__name__].calculate()
 
+    print(f"[{file_name}]: saving reports")
     save_to_excel(runs_dict, file_name if file_name is not None else ff_name)
 
     p_end = time.time()
-    print("Program " + file_name + " calculation (in sec.): " + str((p_end - p_start)))
+    print(f"[{file_name}]: terminated (in sec.): {str(p_end - p_start)}")
 
     return file_name, runs_dict
 
@@ -124,7 +129,8 @@ def main_noise(selection_functions: []):
     for selection_function in selection_functions:
         runs_dict[selection_function.__name__] = RunsStats()
 
-    for i in range(0, MAX_RUNS):
+    print(f"[{file_name}]: has started")
+    for _ in tqdm(range(1, MAX_RUNS + 1)):
         for selection_function in selection_functions:
             sf_name = selection_function.__name__
             sf = selection_function()
@@ -134,9 +140,10 @@ def main_noise(selection_functions: []):
     for selection_function in selection_functions:
         runs_dict[selection_function.__name__].calculate_noise_stats()
 
+    print(f"[{file_name}]: saving reports")
     save_noise_to_excel(runs_dict, file_name)
 
     p_end = time.time()
-    print("Noise " + file_name + " calculation (in sec.): " + str((p_end - p_start)))
+    print(f"[{file_name}]: has terminated (in sec.): {str(p_end - p_start)}")
 
     return runs_dict

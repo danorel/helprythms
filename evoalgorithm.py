@@ -135,7 +135,7 @@ class EvoAlgorithm:
         pop = Fconst().generate_population(N, 100, 0, 0)
         population = Population(pop.chromosomes.copy(), pop.p_m, pop.c_m)
         iteration = 0
-        stop = 1000 if "Disruptive" in sf.__class__.__name__ else G
+        stop = G
 
         while not population.estimate_convergence() and iteration < stop:
             population = sf.select(population)
