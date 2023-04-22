@@ -47,6 +47,7 @@ class EvoAlgorithm:
                     self.selection_function.__class__.__name__,
                     run + 1,
                     self.iteration + 1,
+                    self.fitness_function
                 )
                 self.population.print_phenotypes_distribution(
                     folder_name,
@@ -119,6 +120,7 @@ class EvoAlgorithm:
                 self.selection_function.__class__.__name__,
                 run + 1,
                 self.iteration + 1,
+                self.fitness_function
             )
             self.population.print_phenotypes_distribution(
                 folder_name,
@@ -157,7 +159,7 @@ class EvoAlgorithm:
     def check_success(self):
         ff_name = self.fitness_function.__class__.__name__
         if ff_name == "FHD":
-            optimal_chromosome = list(self.optimal.code)
+            optimal_chromosome = self.fitness_function.generate_optimal(len(self.population.genotypes_list[0]))
             optimal_chromosomes = self.population.get_chromosomes_copies_count(
                 optimal_chromosome
             )
@@ -170,19 +172,17 @@ class EvoAlgorithm:
             return any(success_chromosomes)
 
     @staticmethod
-    def calculate_noise(p, fitness_function, sf, p_m, p_c): 
+    def calculate_noise(p, sf): 
         iteration = 0
         stop = G
 
-        while not p.estimate_convergence(p_m) and iteration < stop:
+        while not p.estimate_convergence(0) and iteration < stop:
             p = sf.select(p)
-            p.crossover(fitness_function, p_c) 
-            p.mutate(fitness_function, p_m) 
             iteration += 1
 
         ns = NoiseStats()
 
-        if p.estimate_convergence(p_m):
+        if p.estimate_convergence(0):
             ns.NI = iteration
             ns.conv_to = p.chromosomes[0].code[0]
 

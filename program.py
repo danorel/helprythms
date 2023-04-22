@@ -88,43 +88,38 @@ def main(
     run: int,
     fitness_function,
     initial_population,
-    selection_functions: list,
+    selection_method,
     file_name,
     *args,
 ):
-    p_start = time.time()
-    runs_dict = {}
-    ff_name = fitness_function.__class__.__name__
-
-    for selection_function in selection_functions:
-        runs_dict[selection_function.__name__] = RunsStats()
-
     print(f"{file_name}, {run} run: is starting...")
+    p_start = time.time()
 
-    for selection_function in selection_functions:
-        p = copy(initial_population)
-        sf_name = selection_function.__name__
-        sf = selection_function()
-        optimal = fitness_function.get_optimal(*args)
-        folder_name = file_name if file_name is not None else ff_name
-        current_run = EvoAlgorithm(p, sf, fitness_function, optimal, *args).run(
-            run, folder_name
-        )
-        runs_dict[sf_name].runs.append(current_run)
-        if run < ITERATIONS_TO_REPORT:
-            save_run_plots(folder_name, sf_name, current_run, run)
+    p = copy(initial_population)
+    sf_name = selection_method.__class__.__name__
+    ff_name = fitness_function.__class__.__name__
+    optimal = fitness_function.get_optimal(*args)
+    folder_name = file_name if file_name is not None else ff_name
 
-    for selection_function in selection_functions:
-        runs_dict[selection_function.__name__].calculate()
+    current_run = EvoAlgorithm(p, selection_method, fitness_function, optimal, *args).run(
+        run, folder_name
+    )
+
+    if run < ITERATIONS_TO_REPORT:
+        print(f"{file_name}, {run} run: saving plots...")
+        save_run_plots(folder_name, sf_name, current_run, run)
 
     if run < ITERATIONS_TO_REPORT:
         print(f"{file_name}, {run} run: saving reports...")
-        save_to_excel(runs_dict, file_name if file_name is not None else ff_name)
+        run_stats = RunsStats() 
+        run_stats.runs.append(current_run)
+        run_stats.calculate()
+        save_to_excel(run_stats, sf_name, file_name, run + 1)
 
     p_end = time.time()
     print(f"{file_name}, {run} run: finished in {str(p_end - p_start)} seconds...")
 
-    return file_name, runs_dict
+    return current_run
 
 
 def main_noise(selection_functions: list, *args):
@@ -135,20 +130,19 @@ def main_noise(selection_functions: list, *args):
     file_name = fitness_function.__class__.__name__
 
     for selection_function in selection_functions:
-        runs_dict[selection_function.__name__] = RunsStats()
+        runs_dict[selection_function.__class__.__name__] = RunsStats()
 
     print(f"{file_name}: is starting...")
     for _ in tqdm(range(MAX_RUNS)):
         initial_population = fitness_function.generate_population(N, 100)
         for selection_function in selection_functions:
             p = copy(initial_population) 
-            sf_name = selection_function.__name__
-            sf = selection_function()
-            ns = EvoAlgorithm.calculate_noise(p, fitness_function, sf, *args)
+            sf_name = selection_function.__class__.__name__
+            ns = EvoAlgorithm.calculate_noise(p, selection_function)
             runs_dict[sf_name].runs.append(Run(noise_stats=ns))
 
     for selection_function in selection_functions:
-        runs_dict[selection_function.__name__].calculate_noise_stats()
+        runs_dict[selection_function.__class__.__name__].calculate_noise_stats()
 
     print(f"{file_name}: saving reports...")
     save_noise_to_excel(runs_dict, file_name)

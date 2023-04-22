@@ -11,7 +11,7 @@ class FHD:
     def __init__(self, delta: float = 100.0):
         self.delta = delta
         self.extremum_x = 0
-        self.extremum_y = self.estimate("0"*100) 
+        self.extremum_y = self.estimate([0]*100) 
         self.factory = PopulationFactory(self)
 
     def get_genotype_value(self, chromosome_code):
@@ -24,7 +24,8 @@ class FHD:
         return (l - k) + k * self.delta
 
     def generate_optimal(self, length):
-        return Chromosome(np.zeros((length,), dtype=int), self.extremum_y)
+        coding = np.zeros((length, ), dtype=int)
+        return Chromosome(coding, self.estimate(coding))
 
     def get_optimal(self, n, l):
         return self.generate_optimal(l)
@@ -70,7 +71,7 @@ class Fx2:
 
     def generate_optimal(self, length):
         coding = encode(self.extremum_x, self.a, self.b, length)
-        return Chromosome(coding, self.extremum_y)
+        return Chromosome(coding, self.estimate(coding))
 
     def get_optimal(self, n, l):
         return self.generate_optimal(l)
@@ -88,7 +89,7 @@ class F5122subx2:
     def __init__(self, a: float, b: float):
         self.a = a
         self.b = b
-        self.extremum_x = 0 
+        self.extremum_x = .0
         self.extremum_y = math.pow(5.12, 2)
         self.factory = PopulationFactory(self)
 
@@ -97,7 +98,8 @@ class F5122subx2:
 
     def estimate(self, chromosome_code):
         x = decode(chromosome_code, self.a, self.b, len(chromosome_code))
-        return math.pow(5.12, 2) - math.pow(x, 2)
+        y = self.score(x)
+        return y
 
     def get_genotype_value(self, chromosome_code):
         x = decode(chromosome_code, self.a, self.b, len(chromosome_code))
@@ -108,7 +110,7 @@ class F5122subx2:
 
     def generate_optimal(self, length):
         coding = encode(self.extremum_x, self.a, self.b, length)
-        return Chromosome(coding, self.extremum_y)
+        return Chromosome(coding, self.estimate(coding))
 
     def generate_population(self, n, l):
         return self.factory.generate(n, l)
@@ -141,7 +143,7 @@ class Fecx:
 
     def generate_optimal(self, length):
         coding = encode(self.extremum_x, self.a, self.b, length)
-        return Chromosome(coding, self.extremum_y)
+        return Chromosome(coding, self.estimate(coding))
 
     def get_optimal(self, n, l):
         return self.generate_optimal(l)

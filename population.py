@@ -20,16 +20,17 @@ class Population:
         )
 
     def print_ones_distribution(
-        self, fitness_function_name, selection_name, run, iteration
+        self, fitness_function_name, selection_name, run, iteration, fitness_function
     ):
         dir_path = f"Function/{N}/{fitness_function_name}/{selection_name}/{ENCODING}/{run}/ones"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
-
-        x_list = [genotype_list.count(1) for genotype_list in self.genotypes_list]
+ 
+        counts, bins = np.histogram([genotype_list.count(1) for genotype_list in self.genotypes_list])
+        width = 1
 
         f = plt.figure()
-        plt.hist(x_list, 20, width=5)
+        plt.hist(bins[:-1], 10, weights=counts, width=width)
         plt.xlabel("Number of ones")
         plt.ylabel("Number of individual")
         plt.title("Counts (ones)")
@@ -45,10 +46,14 @@ class Population:
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
+        counts, bins = np.histogram(self.phenotypes_list)
+        width = fitness_function.extremum_y / 10
+
         f = plt.figure()
-        plt.hist(self.phenotypes_list, 20, width=fitness_function.extremum_y / 30)
+        plt.hist(bins[:-1], 10, weights=counts, width=width)
+        plt.xlim(0, fitness_function.extremum_y * 1.1)
         plt.xlabel("Health")
-        plt.ylabel("Num of individual")
+        plt.ylabel("Number of individuals")
         plt.title("Phenotypes (fitness)")
         plt.savefig(f"{dir_path}/{iteration}.png")
         f.clear()
@@ -61,14 +66,13 @@ class Population:
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
-        x_list = [fitness_function.get_genotype_value(code) for code in self.genotypes_list]
+        counts, bins = np.histogram([fitness_function.get_genotype_value(code) for code in self.genotypes_list])
+        width = (fitness_function.b - fitness_function.a) / 10 
 
         f = plt.figure()
-        plt.ylim(0, len(x_list) * 1.1)
-        plt.xlim(0, fitness_function.extremum_x * 1.1)
-        plt.hist(x_list, 15, width=fitness_function.extremum_x / 20)
+        plt.hist(bins[:-1], 10, weights=counts, width=width)
         plt.xlabel("X")
-        plt.ylabel("Num of individual")
+        plt.ylabel("Number of individuals")
         plt.title("Genotype (x)")
         plt.savefig(f"{dir_path}/{iteration}.png")
         f.clear()
