@@ -13,6 +13,7 @@ def sigma(items):
 class RunsStats:
     def __init__(self):
         self.runs = []
+        self.successful_runs = []
         self.success_percentage = 0
         self.min_NI = None
         self.max_NI = None
@@ -72,14 +73,17 @@ class RunsStats:
         self.noise_NI_avg = None
 
     def calculate(self):
-        successful_runs = [run for run in self.runs if run.is_successful]
-        self.success_percentage = (len(successful_runs) / len(self.runs)) * 100
-        self.calculate_convergence_stats(successful_runs)
-        self.calculate_i_stats(successful_runs)
-        self.calculate_gr_stats(successful_runs)
-        self.calculate_rr_stats(successful_runs)
-        self.calculate_teta_stats(successful_runs)
-        self.calculate_s_stats(successful_runs)
+        self.calculate_successful_runs()
+        self.calculate_convergence_stats()
+        self.calculate_i_stats()
+        self.calculate_gr_stats()
+        self.calculate_rr_stats()
+        self.calculate_teta_stats()
+        self.calculate_s_stats()
+
+    def calculate_successful_runs(self):
+        self.successful_runs = [run for run in self.runs if run.is_successful]
+        self.success_percentage = (len(self.successful_runs) / len(self.runs)) * 100
 
     def calculate_noise_stats(self):
         suc_noise_stats = [
@@ -97,50 +101,50 @@ class RunsStats:
             self.noise_NI_max = max(nis)
             self.noise_NI_avg = mean(nis)
 
-    def calculate_convergence_stats(self, successful_runs):
-        convergence_iterations = [run.pressure_stats.NI for run in successful_runs]
+    def calculate_convergence_stats(self):
+        convergence_iterations = [run.pressure_stats.NI for run in self.successful_runs]
         if len(convergence_iterations) > 0:
             self.min_NI = min(convergence_iterations)
             self.max_NI = max(convergence_iterations)
             self.avg_NI = mean(convergence_iterations)
             self.sigma_NI = sigma(convergence_iterations)
 
-    def calculate_i_stats(self, successful_runs):
-        i_min_list = [run.pressure_stats.i_min for run in successful_runs]
+    def calculate_i_stats(self):
+        i_min_list = [run.pressure_stats.i_min for run in self.successful_runs]
         if len(i_min_list) > 0:
             self.min_I_min = min(i_min_list)
             self.sigma_I_min = sigma(i_min_list)
             self.avg_I_min = mean(i_min_list)
-        i_max_list = [run.pressure_stats.i_max for run in successful_runs]
+        i_max_list = [run.pressure_stats.i_max for run in self.successful_runs]
         if len(i_max_list) > 0:
             self.max_I_max = max(i_max_list)
             self.avg_I_max = mean(i_max_list)
             self.sigma_I_max = sigma(i_max_list)
-        i_avg_list = [run.pressure_stats.i_avg for run in successful_runs]
+        i_avg_list = [run.pressure_stats.i_avg for run in self.successful_runs]
         if len(i_avg_list) > 0:
             self.avg_I_avg = mean(i_avg_list)
             self.sigma_I_avg = sigma(i_avg_list)
-        ni_i_min_list = [run.pressure_stats.i_imin for run in successful_runs]
+        ni_i_min_list = [run.pressure_stats.i_imin for run in self.successful_runs]
         if len(ni_i_min_list):
             self.NI_I_min = min(ni_i_min_list)
-        ni_i_max_list = [run.pressure_stats.i_imax for run in successful_runs]
+        ni_i_max_list = [run.pressure_stats.i_imax for run in self.successful_runs]
         if len(ni_i_max_list) > 0:
             self.NI_I_max = max(ni_i_max_list)
 
-    def calculate_gr_stats(self, successful_runs):
+    def calculate_gr_stats(self):
         gre_list = [
             run.pressure_stats.gre
-            for run in successful_runs
+            for run in self.successful_runs
             if run.pressure_stats.gre is not None
         ]
         grl_list = [
             run.pressure_stats.grl
-            for run in successful_runs
+            for run in self.successful_runs
             if run.pressure_stats.grl is not None
         ]
         gra_list = [
             run.pressure_stats.gra
-            for run in successful_runs
+            for run in self.successful_runs
             if run.pressure_stats.gra is not None
         ]
         if len(gre_list) > 0:
@@ -156,70 +160,75 @@ class RunsStats:
             self.min_gr_avg = min(gra_list)
             self.max_gr_avg = max(gra_list)
 
-    def calculate_rr_stats(self, successful_runs):
-        rr_min_list = [run.reproduction_stats.rr_min for run in successful_runs]
+    def calculate_rr_stats(self):
+        rr_min_list = [run.reproduction_stats.rr_min for run in self.successful_runs]
+        rr_min_list = [rr_list for rr_list in rr_min_list if rr_list is not None]
         if len(rr_min_list) > 0:
             self.min_rr_min = min(rr_min_list)
             self.avg_rr_min = mean(rr_min_list)
             self.sigma_rr_min = sigma(rr_min_list)
-        rr_max_list = [run.reproduction_stats.rr_max for run in successful_runs]
+        rr_max_list = [run.reproduction_stats.rr_max for run in self.successful_runs]
+        rr_max_list = [rr_list for rr_list in rr_max_list if rr_list is not None]
         if len(rr_max_list) > 0:
             self.max_rr_max = max(rr_max_list)
             self.avg_rr_max = mean(rr_max_list)
             self.sigma_rr_max = sigma(rr_max_list)
-        rr_avg_list = [run.reproduction_stats.rr_avg for run in successful_runs]
+        rr_avg_list = [run.reproduction_stats.rr_avg for run in self.successful_runs]
+        rr_avg_list = [rr_list for rr_list in rr_avg_list if rr_list is not None]
         if len(rr_avg_list) > 0:
             self.avg_rr_avg = mean(rr_avg_list)
             self.sigma_rr_avg = sigma(rr_avg_list)
-        ni_rr_min_list = [run.reproduction_stats.ni_rr_min for run in successful_runs]
+        ni_rr_min_list = [run.reproduction_stats.ni_rr_min for run in self.successful_runs]
+        ni_rr_min_list = [rr_list for rr_list in ni_rr_min_list if rr_list is not None]
         if len(ni_rr_min_list) > 0:
             self.NI_rr_min = min(ni_rr_min_list)
-        ni_rr_max_list = [run.reproduction_stats.ni_rr_max for run in successful_runs]
+        ni_rr_max_list = [run.reproduction_stats.ni_rr_max for run in self.successful_runs]
+        ni_rr_max_list = [rr_list for rr_list in ni_rr_max_list if rr_list is not None]
         if len(ni_rr_max_list) > 0:
             self.NI_rr_max = max(ni_rr_max_list)
 
-    def calculate_teta_stats(self, successful_runs):
-        teta_min_list = [run.reproduction_stats.teta_min for run in successful_runs]
+    def calculate_teta_stats(self):
+        teta_min_list = [run.reproduction_stats.teta_min for run in self.successful_runs]
         if len(teta_min_list) > 0:
             self.min_teta_min = min(teta_min_list)
             self.avg_teta_min = mean(teta_min_list)
             self.sigma_teta_min = sigma(teta_min_list)
-        teta_max_list = [run.reproduction_stats.teta_max for run in successful_runs]
+        teta_max_list = [run.reproduction_stats.teta_max for run in self.successful_runs]
         if len(teta_max_list) > 0:
             self.max_teta_max = max(teta_max_list)
             self.avg_teta_max = mean(teta_max_list)
             self.sigma_teta_max = sigma(teta_max_list)
-        teta_avg_list = [run.reproduction_stats.teta_avg for run in successful_runs]
+        teta_avg_list = [run.reproduction_stats.teta_avg for run in self.successful_runs]
         if len(teta_avg_list) > 0:
             self.avg_teta_avg = mean(teta_avg_list)
             self.sigma_teta_avg = sigma(teta_avg_list)
         ni_teta_min_list = [
-            run.reproduction_stats.ni_teta_min for run in successful_runs
+            run.reproduction_stats.ni_teta_min for run in self.successful_runs
         ]
         if len(ni_teta_min_list) > 0:
             self.NI_teta_min = min(ni_teta_min_list)
         ni_teta_max_list = [
-            run.reproduction_stats.ni_teta_max for run in successful_runs
+            run.reproduction_stats.ni_teta_max for run in self.successful_runs
         ]
         if len(ni_teta_max_list) > 0:
             self.NI_teta_max = max(ni_teta_max_list)
 
-    def calculate_s_stats(self, successful_runs):
-        s_min_list = [run.selection_diff_stats.s_min for run in successful_runs]
+    def calculate_s_stats(self):
+        s_min_list = [run.selection_diff_stats.s_min for run in self.successful_runs]
         if len(s_min_list) > 0:
             self.min_s_min = min(s_min_list)
             self.avg_s_min = mean(s_min_list)
-        s_max_list = [run.selection_diff_stats.s_max for run in successful_runs]
+        s_max_list = [run.selection_diff_stats.s_max for run in self.successful_runs]
         if len(s_max_list) > 0:
             self.max_s_max = max(s_max_list)
             self.avg_s_max = mean(s_max_list)
-        s_avg_list = [run.selection_diff_stats.s_avg for run in successful_runs]
+        s_avg_list = [run.selection_diff_stats.s_avg for run in self.successful_runs]
         if len(s_avg_list) > 0:
             self.avg_s_avg = mean(s_avg_list)
-        ni_s_min_list = [run.selection_diff_stats.ni_s_min for run in successful_runs]
+        ni_s_min_list = [run.selection_diff_stats.ni_s_min for run in self.successful_runs]
         if len(ni_s_min_list) > 0:
             self.NI_s_min = min(ni_s_min_list)
-        ni_s_max_list = [run.selection_diff_stats.ni_s_max for run in successful_runs]
+        ni_s_max_list = [run.selection_diff_stats.ni_s_max for run in self.successful_runs]
         if len(ni_s_max_list) > 0:
             self.NI_s_max = max(ni_s_max_list)
 
@@ -286,6 +295,15 @@ class RunsStats:
             "Noise NI min": [self.noise_NI_min],
             "Noise NI max": [self.noise_NI_max],
             "Noise NI avg": [self.noise_NI_avg],
+            "Min_RR_min": [self.min_rr_min],
+            "Max_RR_max": [self.max_rr_max],
+            "Avg_RR_min": [self.avg_rr_min],
+            "Avg_RR_max": [self.avg_rr_max],
+            "Avg_RR_avg": [self.avg_rr_avg],
+            "NI_RR_min": [self.NI_rr_min],
+            "NI_RR_max": [self.NI_rr_max],
+            "Sigma_RR_min": [self.sigma_rr_min],
+            "Sigma_RR_max": [self.sigma_rr_max],
         }
 
     def __str__(self):

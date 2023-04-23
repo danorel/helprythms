@@ -137,14 +137,16 @@ def main_noise(selection_methods: list, *args):
     for _ in tqdm(range(MAX_RUNS)):
         initial_population = fitness_function.generate_population(N, 100)
         for selection_method in selection_methods:
-            p = copy(initial_population) 
-            sf_name = repr(selection_method) 
-            ns = EvoAlgorithm.calculate_noise(p, selection_method)
-            runs_dict[sf_name].runs.append(Run(noise_stats=ns))
+            p = copy(initial_population)
+            sf_name = repr(selection_method)
+            current_run = EvoAlgorithm.calculate_noise(p, selection_method)
+            runs_dict[sf_name].runs.append(current_run)
 
     for selection_method in selection_methods:
         sf_name = repr(selection_method)
+        runs_dict[sf_name].calculate_successful_runs()
         runs_dict[sf_name].calculate_noise_stats()
+        runs_dict[sf_name].calculate_rr_stats()
 
     print(f"{file_name}: saving reports...")
     save_noise_to_excel(runs_dict, file_name)

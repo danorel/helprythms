@@ -129,6 +129,13 @@ def save_noise_to_excel(runs_dictionary, fitness_function_name):
                 func_num + 1,
                 func_num == 1,
             )
+            last_col_num = save_to_excel_internal(
+                worksheet,
+                run.reproduction_stats.as_dict(),
+                last_col_num,
+                func_num + 1,
+                func_num == 1,
+            )
             i = i + 1
             if func_num == 1:
                 worksheet.merge_range(

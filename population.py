@@ -205,6 +205,15 @@ class Population:
         best_genotype = self.genotypes_list[best_index]
         return best_genotype
 
+    def get_best_genotypes(self) -> list[list[int]]:
+        max_fitness = self.get_max_fitness()
+        best_genotypes = [
+            self.genotypes_list[index]
+            for index, fitness_value in enumerate(self.phenotypes_list)
+            if fitness_value == max_fitness
+        ]
+        return list(np.unique(best_genotypes, axis=0))
+
     def get_best_chromosome(self) -> Chromosome:
         best_index = self.phenotypes_list.argmax()
         best_chromosome = self.chromosomes[best_index]
@@ -219,6 +228,15 @@ class Population:
         genotype_copy = ''.join(map(str, genotype_copy.code))
         for genotype_available in genotypes_available:
             copies_count += (genotype_available == genotype_copy)
+        return copies_count
+
+    def get_chromosomes_copies_counts(self, genotypes: list[list[int]]) -> int:
+        all_genotypes = [''.join(map(str, genotype)) for genotype in self.genotypes_list]
+        unique_genotypes = {''.join(map(str, genotype)) for genotype in genotypes}
+
+        copies_count = 0
+        for genotype in unique_genotypes:
+            copies_count += all_genotypes.count(genotype)
         return copies_count
 
     def update(self):

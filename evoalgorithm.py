@@ -180,14 +180,39 @@ class EvoAlgorithm:
         iteration = 0
         stop = G
 
+        reproduction_stats = ReproductionStats()
+        is_successful = False
+
         while not p.estimate_convergence(0) and iteration < stop:
+            keys_before_selection = p.get_keys_list()
+            best_genotypes = p.get_best_genotypes()
+
             p = sf.select(p)
+
+            keys_after_selection = p.get_keys_list()
+            not_selected_chromosomes = set(keys_before_selection) - set(
+                keys_after_selection
+            )
+            num_of_best = p.get_chromosomes_copies_counts(best_genotypes)
+
+            reproduction_stats.rr_list.append(
+                1 - (len(not_selected_chromosomes) / N)
+            )
+            reproduction_stats.best_rr_list.append(
+                num_of_best / len(p.chromosomes)
+            )
+
             iteration += 1
 
         ns = NoiseStats()
 
         if p.estimate_convergence(0):
+            is_successful = True
             ns.NI = iteration
             ns.conv_to = p.chromosomes[0].code[0]
 
-        return ns
+        return Run(
+            reproduction_stats=reproduction_stats,
+            noise_stats=ns,
+            is_successful=is_successful,
+        )
