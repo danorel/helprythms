@@ -3,7 +3,7 @@ import time
 from tqdm import tqdm
 
 from multiprocessing import Pool
-from constants import P_M, P_C, MAX_RUNS, env
+from constants import MAX_RUNS, env
 from functions import *
 from rws import RankExponentialRWS
 from sus import RankExponentialSUS
@@ -13,36 +13,50 @@ from excel import save_avg_to_excel
 from runs_stats import RunsStats
 
 
-selection_methods = [RankExponentialSUS(), RankExponentialRWS()]
+selection_methods = [
+    RankExponentialSUS(c=0.9801),
+    RankExponentialSUS(c=0.95099005),
+    RankExponentialSUS(c=0.941480149),
+    RankExponentialSUS(c=0.904382075),
+
+    RankExponentialRWS(c=0.9801),
+    RankExponentialRWS(c=0.95099005),
+    RankExponentialRWS(c=0.941480149),
+    RankExponentialRWS(c=0.904382075),
+]
+
+pm_fhd = 0.00001
+pm_x = 0.0001
+pc = 1
 
 fhd_arguments = [
     ("FHD", 0, 0),
-    ("FHD_pc", 0, P_C),
-    ("FHD_pm", 0.00001, 0),
-    ("FHD_pmpc", 0.00001, P_C),
+    ("FHD_pc", 0, pc),
+    ("FHD_pm", pm_fhd, 0),
+    ("FHD_pmpc", pm_fhd, pc),
 ]
 fhd_fitness_config = (FHD(100), N, 100)
 
 fx2_arguments = [
     ("Fx2", 0, 0),
-    ("Fx2_pm", 0.0001, 0),
-    ("Fx2_pc", 0, P_C),
-    ("Fx2_pmpc", 0.0001, P_C),
+    ("Fx2_pm", pm_x, 0),
+    ("Fx2_pc", 0, pc),
+    ("Fx2_pmpc", pm_x, pc),
 ]
 fx2_fitness_config = (Fx2(0, 10.23), N, 10)
 
 f5122subx2_arguments = [
     ("512subx2", 0, 0),
-    ("512subx2_pm", 0.0001, 0),
-    ("512subx2_pc", 0, P_C),
-    ("512subx2_pmpc", 0.0001, P_C),
+    ("512subx2_pm", pm_x, 0),
+    ("512subx2_pc", 0, pc),
+    ("512subx2_pmpc", pm_x, pc),
 ]
 f5122subx2_fitness_config = (F5122subx2(-5.11, 5.12), N, 10)
 
 test_arguments = [
-    [("Fx2_pmpc", P_M, P_C)],
-    [("512subx2_pmpc", P_M, P_C)],
-    [("FHD_pmpc", P_M, P_C)]
+    [("Fx2_pmpc", pm_x, pc)],
+    [("512subx2_pmpc", pm_x, pc)],
+    [("FHD_pmpc", pm_fhd, pc)]
 ]
 test_fitness_configs = [
     (Fx2(0, 10.23), N, 10),

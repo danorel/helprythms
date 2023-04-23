@@ -5,6 +5,9 @@ from population import Population
 
 
 class RankExponentialRWS:
+    def __init__(self, c: float):
+        self.c = c
+
     def exponential_rws(self, population: Population):
         N = len(population.chromosomes)
 
@@ -25,8 +28,8 @@ class RankExponentialRWS:
         population.update_chromosomes(chromosomes)
         return self.exponential_rws(population)
 
-    def scale(self, size: int, rank: int):
-        return ((C - 1) / (pow(C, size) - 1)) * pow(C, size - rank)
+    def scale(self, size: int, rank: int) -> float:
+        return ((self.c - 1) / (pow(self.c, size) - 1)) * pow(self.c, size - rank)
 
     def sort(self, chromosomes):
         return sorted(

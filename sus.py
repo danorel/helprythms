@@ -28,8 +28,8 @@ def basic_sus(population: Population, probabilities: float, probability_scale: l
 
 
 class RankExponentialSUS:
-    def __init__(self):
-        self.c = 0.95
+    def __init__(self, c: float):
+        self.c = c
 
     def exponential_sus(self, population: Population):
         probabilities_total = 0
@@ -60,7 +60,7 @@ class RankExponentialSUS:
         return self.exponential_sus(population)
 
     def scale(self, size: int, rank: int) -> float:
-        return ((C - 1) / (pow(C, size) - 1)) * pow(C, size - rank)
+        return ((self.c - 1) / (pow(self.c, size) - 1)) * pow(self.c, size - rank)
 
     def sort(self, chromosomes):
         return sorted(
