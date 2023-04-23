@@ -65,7 +65,6 @@ class EvoAlgorithm:
                         self.fitness_function,
                     )
             keys_before_selection = self.population.get_keys_list()
-            best_genotype = self.population.get_best_genotype()
             f = avg_fitness_list[self.iteration]
 
             self.population = self.selection_function.select(self.population)
@@ -83,7 +82,10 @@ class EvoAlgorithm:
             fs = self.population.get_mean_fitness()
             avg_fitness_list.append(fs)
             self.selection_diff_stats.s_list.append(fs - f)
-            num_of_best = self.population.get_chromosomes_copies_count(best_genotype)
+
+            best_chromosome = self.population.get_best_chromosome()
+            num_of_best = self.population.get_chromosomes_copies_count(best_chromosome)
+
             self.reproduction_stats.rr_list.append(
                 1 - (len(not_selected_chromosomes) / N)
             )
@@ -146,6 +148,9 @@ class EvoAlgorithm:
         self.selection_diff_stats.calculate()
         is_successful = self.check_success() if convergent else False
 
+        print("convergent", convergent)
+        print("success", self.check_success())
+
         return Run(
             avg_fitness_list,
             std_fitness_list,
@@ -169,6 +174,7 @@ class EvoAlgorithm:
                 self.fitness_function.check_chromosome_success(p)
                 for p in self.population.chromosomes
             ]
+            print("any optimal", any(success_chromosomes))
             return any(success_chromosomes)
 
     @staticmethod

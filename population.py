@@ -8,6 +8,29 @@ from chromosome import Chromosome
 from constants import N, ENCODING
 
 
+def get_scale_factor(size: int, length: int):
+    if length == 100:
+        if size > 20:
+            return 5
+        elif size > 15:
+            return 7
+        elif size > 10:
+            return 9
+        elif size > 5:
+            return 11
+        else:
+            return 13
+    else:
+        if size > 10:
+            return 0.25
+        elif size > 8:
+            return 0.5
+        elif size > 5:
+            return 0.75
+        else:
+            return 1
+
+
 class Population:
     def __init__(self, chromosomes: list[Chromosome]):
         self.chromosomes = chromosomes
@@ -26,18 +49,24 @@ class Population:
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
  
-        counts, bins = np.histogram([genotype_list.count(1) for genotype_list in self.genotypes_list])
-        width = 1
+        values = [genotype_list.count(1) for genotype_list in self.genotypes_list]
+        size = len(set(values))
+        counts, bins = np.histogram(values, bins=size)
+
+        best_genotype = self.get_best_genotype() 
+        length = len(best_genotype)
+
+        scale = get_scale_factor(size, length)
+        rest_kwargs = { 'width': 0.1 } if size == 1 else { 'width': (size * scale) / length }
 
         f = plt.figure()
-        plt.hist(bins[:-1], 10, weights=counts, width=width)
+        plt.hist(bins[:-1], size, weights=counts, **rest_kwargs)
         plt.xlabel("Number of ones")
-        plt.ylabel("Number of individual")
+        plt.ylabel("Number of individuals")
         plt.title("Counts (ones)")
         plt.savefig(f"{dir_path}/{iteration}.png")
         f.clear()
         plt.close(f)
-
 
     def print_phenotypes_distribution(
         self, fitness_function_name, selection_name, run, iteration, fitness_function
@@ -46,11 +75,16 @@ class Population:
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
-        counts, bins = np.histogram(self.phenotypes_list)
-        width = fitness_function.extremum_y / 10
+        values = self.phenotypes_list
+        size = len(set(values)) 
+        counts, bins = np.histogram(values, bins=size)
+
+        rest_kwargs = { 
+            'width': 0.1 if fitness_function.extremum_y == 0 else fitness_function.extremum_y / 20
+        } if size == 1 else {}
 
         f = plt.figure()
-        plt.hist(bins[:-1], 10, weights=counts, width=width)
+        plt.hist(bins[:-1], size, weights=counts, **rest_kwargs)
         plt.xlim(0, fitness_function.extremum_y * 1.1)
         plt.xlabel("Health")
         plt.ylabel("Number of individuals")
@@ -66,11 +100,16 @@ class Population:
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
-        counts, bins = np.histogram([fitness_function.get_genotype_value(code) for code in self.genotypes_list])
-        width = (fitness_function.b - fitness_function.a) / 10 
+        values = [fitness_function.get_genotype_value(code) for code in self.genotypes_list]
+        size = len(set(values)) 
+        counts, bins = np.histogram(values, bins=size)
+
+        rest_kwargs = { 
+            'width': 0.1 if fitness_function.extremum_x == 0 else fitness_function.extremum_x / 100 
+        } if size == 1 else {}
 
         f = plt.figure()
-        plt.hist(bins[:-1], 10, weights=counts, width=width)
+        plt.hist(bins[:-1], size, weights=counts, **rest_kwargs)
         plt.xlabel("X")
         plt.ylabel("Number of individuals")
         plt.title("Genotype (x)")
@@ -161,16 +200,26 @@ class Population:
     def get_fitness_std(self):
         return self.phenotypes_list.std()
 
-    def get_best_genotype(self):
+    def get_best_genotype(self) -> list[int]:
         best_index = self.phenotypes_list.argmax()
         best_genotype = self.genotypes_list[best_index]
         return best_genotype
 
+    def get_best_chromosome(self) -> Chromosome:
+        best_index = self.phenotypes_list.argmax()
+        best_chromosome = self.chromosomes[best_index]
+        return best_chromosome
+
     def get_keys_list(self):
         return list(map(lambda chromosome: chromosome.key, self.chromosomes))
 
-    def get_chromosomes_copies_count(self, genotype_copy):
-        return self.genotypes_list.count(genotype_copy)
+    def get_chromosomes_copies_count(self, genotype_copy: Chromosome):
+        copies_count = 0
+        genotypes_available = [''.join(map(str, genotype)) for genotype in self.genotypes_list]
+        genotype_copy = ''.join(map(str, genotype_copy.code))
+        for genotype_available in genotypes_available:
+            copies_count += (genotype_available == genotype_copy)
+        return copies_count
 
     def update(self):
         self.phenotypes_list = np.fromiter(
