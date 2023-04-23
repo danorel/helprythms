@@ -1,8 +1,8 @@
-env = "test"
+env = "release"
 
 # Config: amount of evolutionary algorithms / iterations to probe and report.
 MAX_RUNS = 1 if env == "test" else 100
-ITERATIONS_TO_REPORT = 10 if env == "test" else 5
+ITERATIONS_TO_REPORT = 3 if env == "test" else 5
 
 # Genotype: amount of chromosomes in population / codec.
 N = 100

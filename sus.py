@@ -2,7 +2,6 @@ import random
 
 from numpy import random
 
-from constants import C
 from population import Population
 
 
@@ -66,3 +65,6 @@ class RankExponentialSUS:
         return sorted(
             chromosomes.copy(), key=lambda chromosome: chromosome.fitness, reverse=True
         )
+
+    def __repr__(self):
+        return f"RankExponentialSUS[c={self.c}]"

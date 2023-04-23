@@ -42,16 +42,17 @@ class EvoAlgorithm:
 
         while not convergent and self.iteration < stop:
             if run < ITERATIONS_TO_REPORT and self.iteration < ITERATIONS_TO_REPORT:
+                sf_name = repr(self.selection_function)
                 self.population.print_ones_distribution(
                     folder_name,
-                    self.selection_function.__class__.__name__,
+                    sf_name,
                     run + 1,
                     self.iteration + 1,
                     self.fitness_function
                 )
                 self.population.print_phenotypes_distribution(
                     folder_name,
-                    self.selection_function.__class__.__name__,
+                    sf_name,
                     run + 1,
                     self.iteration + 1,
                     self.fitness_function,
@@ -59,7 +60,7 @@ class EvoAlgorithm:
                 if self.fitness_function.__class__.__name__ != "FHD": 
                     self.population.print_genotypes_distribution(
                         folder_name,
-                        self.selection_function.__class__.__name__,
+                        sf_name,
                         run + 1,
                         self.iteration + 1,
                         self.fitness_function,
@@ -117,16 +118,17 @@ class EvoAlgorithm:
             self.pressure_stats.NI = self.iteration
 
         if run < ITERATIONS_TO_REPORT:
+            sf_name = repr(self.selection_function)
             self.population.print_ones_distribution(
                 folder_name,
-                self.selection_function.__class__.__name__,
+                sf_name,
                 run + 1,
                 self.iteration + 1,
                 self.fitness_function
             )
             self.population.print_phenotypes_distribution(
                 folder_name,
-                self.selection_function.__class__.__name__,
+                sf_name,
                 run + 1,
                 self.iteration + 1,
                 self.fitness_function,
@@ -134,7 +136,7 @@ class EvoAlgorithm:
             if self.fitness_function.__class__.__name__ != "FHD": 
                 self.population.print_genotypes_distribution(
                     folder_name,
-                    self.selection_function.__class__.__name__,
+                    sf_name,
                     run + 1,
                     self.iteration + 1,
                     self.fitness_function,

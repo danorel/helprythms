@@ -84,20 +84,23 @@ def run_functions(fitness_config, arguments):
         file_name, *_ = argument
         runs_stats[file_name] = {}
         for selection_method in selection_methods:
-            runs_stats[file_name][selection_method.__class__.__name__] = RunsStats()
+            sf_name = repr(selection_method)
+            runs_stats[file_name][sf_name] = RunsStats()
 
     for run in tqdm(range(MAX_RUNS)):
         initial_population = fitness_function.generate_population(*population_arguments)
         for argument in arguments:
             file_name, *rest_argument = argument
             for selection_method in selection_methods:
+                sf_name = repr(selection_method)
                 run_stats = main(run, fitness_function, initial_population, selection_method, file_name, *rest_argument)
-                runs_stats[file_name][selection_method.__class__.__name__].runs.append(run_stats)
+                runs_stats[file_name][sf_name].runs.append(run_stats)
 
     for argument in arguments:
         file_name, *_ = argument
         for selection_method in selection_methods:
-            runs_stats[file_name][selection_method.__class__.__name__].calculate()
+            sf_name = repr(selection_method)
+            runs_stats[file_name][sf_name].calculate()
 
     return runs_stats
 
