@@ -148,9 +148,6 @@ class EvoAlgorithm:
         self.selection_diff_stats.calculate()
         is_successful = self.check_success() if convergent else False
 
-        print("convergent", convergent)
-        print("success", self.check_success())
-
         return Run(
             avg_fitness_list,
             std_fitness_list,
@@ -174,7 +171,6 @@ class EvoAlgorithm:
                 self.fitness_function.check_chromosome_success(p)
                 for p in self.population.chromosomes
             ]
-            print("any optimal", any(success_chromosomes))
             return any(success_chromosomes)
 
     @staticmethod

@@ -80,6 +80,11 @@ def run_functions(fitness_config, arguments):
                 run_stats = main(run, fitness_function, initial_population, selection_method, file_name, *rest_argument)
                 runs_stats[file_name][selection_method.__class__.__name__].runs.append(run_stats)
 
+    for argument in arguments:
+        file_name, *_ = argument
+        for selection_method in selection_methods:
+            runs_stats[file_name][selection_method.__class__.__name__].calculate()
+
     return runs_stats
 
 
