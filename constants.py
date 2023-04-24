@@ -1,4 +1,4 @@
-env = "test"
+env = "release"
 
 # Config: amount of evolutionary algorithms / iterations to probe and report.
 MAX_RUNS = 2 if env == "test" else 100

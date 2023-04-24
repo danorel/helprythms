@@ -6,7 +6,10 @@ from constants import N, ENCODING
 
 
 def save_line_plot(fitness_func_name, selection_name, data, file_name, y_label, iteration):
-    dir_path = f"Function/{N}/{fitness_func_name}/{selection_name}/{ENCODING}/{str(iteration)}"
+    if fitness_func_name.startswith("FHD"):
+        dir_path = f"BinaryChain-{ENCODING}/{N}/{fitness_func_name}/{selection_name}/{str(iteration)}"
+    else:
+        dir_path = f"RealArgument-{ENCODING}/{N}/{fitness_func_name}/{selection_name}/{str(iteration)}"
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
@@ -22,7 +25,10 @@ def save_line_plot(fitness_func_name, selection_name, data, file_name, y_label, 
 def save_lines_plot(
     fitness_func_name, selection_name, data_arr, label_arr, file_name, y_label, iteration
 ):
-    dir_path = f"Function/{N}/{fitness_func_name}/{selection_name}/{ENCODING}/{str(iteration)}"
+    if fitness_func_name.startswith("FHD"):
+        dir_path = f"BinaryChain-{ENCODING}/{N}/{fitness_func_name}/{selection_name}/{str(iteration)}"
+    else:
+        dir_path = f"RealArgument-{ENCODING}/{N}/{fitness_func_name}/{selection_name}/{str(iteration)}"
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 

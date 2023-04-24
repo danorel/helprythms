@@ -45,7 +45,10 @@ class Population:
     def print_ones_distribution(
         self, fitness_function_name, selection_name, run, iteration, fitness_function
     ):
-        dir_path = f"Function/{N}/{fitness_function_name}/{selection_name}/{ENCODING}/{run}/ones"
+        if fitness_function_name.startswith("FHD"):
+            dir_path = f"BinaryChain-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/ones"
+        else:
+            dir_path = f"RealArgument-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/ones"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
  
@@ -71,7 +74,10 @@ class Population:
     def print_phenotypes_distribution(
         self, fitness_function_name, selection_name, run, iteration, fitness_function
     ):
-        dir_path = f"Function/{N}/{fitness_function_name}/{selection_name}/{ENCODING}/{run}/phenotypes"
+        if fitness_function_name.startswith("FHD"):
+            dir_path = f"BinaryChain-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/phenotypes"
+        else:
+            dir_path = f"RealArgument-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/phenotypes"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
@@ -96,7 +102,10 @@ class Population:
     def print_genotypes_distribution(
         self, fitness_function_name, selection_name, run, iteration, fitness_function
     ):
-        dir_path = f"Function/{N}/{fitness_function_name}/{selection_name}/{ENCODING}/{run}/genotypes"
+        if fitness_function_name.startswith("FHD"):
+            dir_path = f"BinaryChain-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/genotypes"
+        else:
+            dir_path = f"RealArgument-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/genotypes"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 

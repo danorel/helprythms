@@ -287,6 +287,17 @@ class RunsStats:
             "Suc": [self.success_percentage],
         }
 
+    """
+    "Min_RR_min": [self.min_rr_min],
+    "Max_RR_max": [self.max_rr_max],
+    "Avg_RR_min": [self.avg_rr_min],
+    "Avg_RR_max": [self.avg_rr_max],
+    "Avg_RR_avg": [self.avg_rr_avg],
+    "NI_RR_min": [self.NI_rr_min],
+    "NI_RR_max": [self.NI_rr_max],
+    "Sigma_RR_min": [self.sigma_rr_min],
+    "Sigma_RR_max": [self.sigma_rr_max],
+    """
     def as_noise_dict(self):
         return {
             "Noise Suc": [self.noise_suc],
@@ -295,15 +306,6 @@ class RunsStats:
             "Noise NI min": [self.noise_NI_min],
             "Noise NI max": [self.noise_NI_max],
             "Noise NI avg": [self.noise_NI_avg],
-            "Min_RR_min": [self.min_rr_min],
-            "Max_RR_max": [self.max_rr_max],
-            "Avg_RR_min": [self.avg_rr_min],
-            "Avg_RR_max": [self.avg_rr_max],
-            "Avg_RR_avg": [self.avg_rr_avg],
-            "NI_RR_min": [self.NI_rr_min],
-            "NI_RR_max": [self.NI_rr_max],
-            "Sigma_RR_min": [self.sigma_rr_min],
-            "Sigma_RR_max": [self.sigma_rr_max],
         }
 
     def __str__(self):

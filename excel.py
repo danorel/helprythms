@@ -22,7 +22,7 @@ def save_to_excel_internal(sheet, dictionary, col_num=1, row_num=2, print_keys=T
 
 
 def save_to_excel(runs_stats, selection_function_name, fitness_function_name, run_number: int):
-    path = f"Function/{N}/{fitness_function_name}/{selection_function_name}/{ENCODING}/{run_number}"
+    path = f"Report/{N}/{fitness_function_name}/{selection_function_name}/{ENCODING}/{run_number}"
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -98,7 +98,7 @@ def save_to_excel(runs_stats, selection_function_name, fitness_function_name, ru
 
 
 def save_noise_to_excel(runs_dictionary, fitness_function_name):
-    path = f"Function/{N}/{fitness_function_name}/{ENCODING}"
+    path = f"Report/{N}/{fitness_function_name}/{ENCODING}"
 
     if not os.path.exists(path):
         os.makedirs(path)
@@ -125,13 +125,6 @@ def save_noise_to_excel(runs_dictionary, fitness_function_name):
             last_col_num = save_to_excel_internal(
                 worksheet,
                 run.noise_stats.as_dict(),
-                last_col_num,
-                func_num + 1,
-                func_num == 1,
-            )
-            last_col_num = save_to_excel_internal(
-                worksheet,
-                run.reproduction_stats.as_dict(),
                 last_col_num,
                 func_num + 1,
                 func_num == 1,
@@ -177,7 +170,7 @@ def save_noise_to_excel(runs_dictionary, fitness_function_name):
 
 
 def save_avg_to_excel(func_runs_list, noise_runs_dictionary):
-    path = f"Function/{N}/AVG/{ENCODING}"
+    path = f"Report/{N}/AVG/{ENCODING}"
     if not os.path.exists(path):
         os.makedirs(path)
     workbook = xlsxwriter.Workbook(path + "/" + ENCODING + "_" + "data.xlsx")
