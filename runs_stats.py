@@ -111,23 +111,28 @@ class RunsStats:
 
     def calculate_i_stats(self):
         i_min_list = [run.pressure_stats.i_min for run in self.successful_runs]
+        i_min_list = [i for i in i_min_list if i is not None]
         if len(i_min_list) > 0:
             self.min_I_min = min(i_min_list)
             self.sigma_I_min = sigma(i_min_list)
             self.avg_I_min = mean(i_min_list)
         i_max_list = [run.pressure_stats.i_max for run in self.successful_runs]
+        i_max_list = [i for i in i_max_list if i is not None]
         if len(i_max_list) > 0:
             self.max_I_max = max(i_max_list)
             self.avg_I_max = mean(i_max_list)
             self.sigma_I_max = sigma(i_max_list)
         i_avg_list = [run.pressure_stats.i_avg for run in self.successful_runs]
+        i_avg_list = [i for i in i_avg_list if i is not None]
         if len(i_avg_list) > 0:
             self.avg_I_avg = mean(i_avg_list)
             self.sigma_I_avg = sigma(i_avg_list)
         ni_i_min_list = [run.pressure_stats.i_imin for run in self.successful_runs]
+        ni_i_min_list = [i for i in ni_i_min_list if i is not None]
         if len(ni_i_min_list):
             self.NI_I_min = min(ni_i_min_list)
         ni_i_max_list = [run.pressure_stats.i_imax for run in self.successful_runs]
+        ni_i_max_list = [i for i in ni_i_max_list if i is not None]
         if len(ni_i_max_list) > 0:
             self.NI_I_max = max(ni_i_max_list)
 
@@ -162,73 +167,83 @@ class RunsStats:
 
     def calculate_rr_stats(self):
         rr_min_list = [run.reproduction_stats.rr_min for run in self.successful_runs]
-        rr_min_list = [rr_list for rr_list in rr_min_list if rr_list is not None]
+        rr_min_list = [rr for rr in rr_min_list if rr is not None]
         if len(rr_min_list) > 0:
             self.min_rr_min = min(rr_min_list)
             self.avg_rr_min = mean(rr_min_list)
             self.sigma_rr_min = sigma(rr_min_list)
         rr_max_list = [run.reproduction_stats.rr_max for run in self.successful_runs]
-        rr_max_list = [rr_list for rr_list in rr_max_list if rr_list is not None]
+        rr_max_list = [rr for rr in rr_max_list if rr is not None]
         if len(rr_max_list) > 0:
             self.max_rr_max = max(rr_max_list)
             self.avg_rr_max = mean(rr_max_list)
             self.sigma_rr_max = sigma(rr_max_list)
         rr_avg_list = [run.reproduction_stats.rr_avg for run in self.successful_runs]
-        rr_avg_list = [rr_list for rr_list in rr_avg_list if rr_list is not None]
+        rr_avg_list = [rr for rr in rr_avg_list if rr is not None]
         if len(rr_avg_list) > 0:
             self.avg_rr_avg = mean(rr_avg_list)
             self.sigma_rr_avg = sigma(rr_avg_list)
         ni_rr_min_list = [run.reproduction_stats.ni_rr_min for run in self.successful_runs]
-        ni_rr_min_list = [rr_list for rr_list in ni_rr_min_list if rr_list is not None]
+        ni_rr_min_list = [rr for rr in ni_rr_min_list if rr is not None]
         if len(ni_rr_min_list) > 0:
             self.NI_rr_min = min(ni_rr_min_list)
         ni_rr_max_list = [run.reproduction_stats.ni_rr_max for run in self.successful_runs]
-        ni_rr_max_list = [rr_list for rr_list in ni_rr_max_list if rr_list is not None]
+        ni_rr_max_list = [rr for rr in ni_rr_max_list if rr is not None]
         if len(ni_rr_max_list) > 0:
             self.NI_rr_max = max(ni_rr_max_list)
 
     def calculate_teta_stats(self):
         teta_min_list = [run.reproduction_stats.teta_min for run in self.successful_runs]
+        teta_min_list = [teta for teta in teta_min_list if teta is not None]
         if len(teta_min_list) > 0:
             self.min_teta_min = min(teta_min_list)
             self.avg_teta_min = mean(teta_min_list)
             self.sigma_teta_min = sigma(teta_min_list)
         teta_max_list = [run.reproduction_stats.teta_max for run in self.successful_runs]
+        teta_max_list = [teta for teta in teta_max_list if teta is not None]
         if len(teta_max_list) > 0:
             self.max_teta_max = max(teta_max_list)
             self.avg_teta_max = mean(teta_max_list)
             self.sigma_teta_max = sigma(teta_max_list)
         teta_avg_list = [run.reproduction_stats.teta_avg for run in self.successful_runs]
+        teta_avg_list = [teta for teta in teta_avg_list if teta is not None]
         if len(teta_avg_list) > 0:
             self.avg_teta_avg = mean(teta_avg_list)
             self.sigma_teta_avg = sigma(teta_avg_list)
         ni_teta_min_list = [
             run.reproduction_stats.ni_teta_min for run in self.successful_runs
         ]
+        ni_teta_min_list = [teta for teta in ni_teta_min_list if teta is not None]
         if len(ni_teta_min_list) > 0:
             self.NI_teta_min = min(ni_teta_min_list)
         ni_teta_max_list = [
             run.reproduction_stats.ni_teta_max for run in self.successful_runs
         ]
+        ni_teta_max_list = [teta for teta in ni_teta_max_list if teta is not None]
         if len(ni_teta_max_list) > 0:
             self.NI_teta_max = max(ni_teta_max_list)
 
     def calculate_s_stats(self):
         s_min_list = [run.selection_diff_stats.s_min for run in self.successful_runs]
+        s_min_list = [s for s in s_min_list if s is not None]
         if len(s_min_list) > 0:
             self.min_s_min = min(s_min_list)
             self.avg_s_min = mean(s_min_list)
         s_max_list = [run.selection_diff_stats.s_max for run in self.successful_runs]
+        s_max_list = [s for s in s_max_list if s is not None]
         if len(s_max_list) > 0:
             self.max_s_max = max(s_max_list)
             self.avg_s_max = mean(s_max_list)
         s_avg_list = [run.selection_diff_stats.s_avg for run in self.successful_runs]
+        s_avg_list = [s for s in s_avg_list if s is not None]
         if len(s_avg_list) > 0:
             self.avg_s_avg = mean(s_avg_list)
         ni_s_min_list = [run.selection_diff_stats.ni_s_min for run in self.successful_runs]
+        ni_s_min_list = [s for s in ni_s_min_list if s is not None]
         if len(ni_s_min_list) > 0:
             self.NI_s_min = min(ni_s_min_list)
         ni_s_max_list = [run.selection_diff_stats.ni_s_max for run in self.successful_runs]
+        ni_s_max_list = [s for s in ni_s_max_list if s is not None]
         if len(ni_s_max_list) > 0:
             self.NI_s_max = max(ni_s_max_list)
 

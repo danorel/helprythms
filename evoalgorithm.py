@@ -1,7 +1,7 @@
 from pressure_stats import PressureStats
-from noise_stats import NoiseStats
 from selection_diff_stats import SelectionDiffStats
 from reproduction_stats import ReproductionStats
+from noise_stats import NoiseStats
 from run import Run
 from functions import *
 from constants import *
@@ -40,6 +40,8 @@ class EvoAlgorithm:
         stop = G
         convergent = self.population.estimate_convergence(self.p_m)
 
+        ff_name = repr(self.fitness_function)
+
         while not convergent and self.iteration < stop:
             if run < ITERATIONS_TO_REPORT and self.iteration < ITERATIONS_TO_REPORT:
                 sf_name = repr(self.selection_function)
@@ -57,7 +59,7 @@ class EvoAlgorithm:
                     self.iteration + 1,
                     self.fitness_function,
                 )
-                if self.fitness_function.__class__.__name__ != "FHD": 
+                if not ff_name.startswith("FHD"): 
                     self.population.print_genotypes_distribution(
                         folder_name,
                         sf_name,
@@ -113,6 +115,7 @@ class EvoAlgorithm:
                 self.pressure_stats.grli = self.iteration
                 self.pressure_stats.grl = self.pressure_stats.grs[-1]
             convergent = self.population.estimate_convergence(self.p_m)
+            self.population.override_chromosome_keys()
 
         if convergent:
             self.pressure_stats.NI = self.iteration
@@ -133,7 +136,7 @@ class EvoAlgorithm:
                 self.iteration + 1,
                 self.fitness_function,
             )
-            if self.fitness_function.__class__.__name__ != "FHD": 
+            if not ff_name.startswith("FHD"): 
                 self.population.print_genotypes_distribution(
                     folder_name,
                     sf_name,
@@ -150,13 +153,18 @@ class EvoAlgorithm:
         self.selection_diff_stats.calculate()
         is_successful = self.check_success() if convergent else False
 
+        ns = NoiseStats() if ff_name.startswith("FConst") else None
+        if is_successful and ns:
+            ns.NI = self.iteration
+            ns.conv_to = self.population.chromosomes[0].code[0]
+
         return Run(
             avg_fitness_list,
             std_fitness_list,
             self.pressure_stats,
             self.reproduction_stats,
             self.selection_diff_stats,
-            None,
+            ns,
             is_successful,
         )
 
@@ -168,51 +176,11 @@ class EvoAlgorithm:
                 optimal_chromosome
             )
             return optimal_chromosomes == N
+        elif ff_name == "FConst":
+            return self.population.is_identical
         else:
             success_chromosomes = [
                 self.fitness_function.check_chromosome_success(p)
                 for p in self.population.chromosomes
             ]
             return any(success_chromosomes)
-
-    @staticmethod
-    def calculate_noise(p, sf): 
-        iteration = 0
-        stop = G
-
-        reproduction_stats = ReproductionStats()
-        is_successful = False
-
-        while not p.estimate_convergence(0) and iteration < stop:
-            keys_before_selection = p.get_keys_list()
-            best_genotypes = p.get_best_genotypes()
-
-            p = sf.select(p)
-
-            keys_after_selection = p.get_keys_list()
-            not_selected_chromosomes = set(keys_before_selection) - set(
-                keys_after_selection
-            )
-            num_of_best = p.get_chromosomes_copies_counts(best_genotypes)
-
-            reproduction_stats.rr_list.append(
-                1 - (len(not_selected_chromosomes) / N)
-            )
-            reproduction_stats.best_rr_list.append(
-                num_of_best / len(p.chromosomes)
-            )
-
-            iteration += 1
-
-        ns = NoiseStats()
-
-        if p.estimate_convergence(0):
-            is_successful = True
-            ns.NI = iteration
-            ns.conv_to = p.chromosomes[0].code[0]
-
-        return Run(
-            reproduction_stats=reproduction_stats,
-            noise_stats=ns,
-            is_successful=is_successful,
-        )

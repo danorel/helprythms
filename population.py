@@ -43,12 +43,12 @@ class Population:
         )
 
     def print_ones_distribution(
-        self, fitness_function_name, selection_name, run, iteration, fitness_function
+        self, ff_name, selection_name, run, iteration, fitness_function
     ):
-        if fitness_function_name.startswith("FHD"):
-            dir_path = f"BinaryChain-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/ones"
+        if ff_name.startswith("FHD") or ff_name.startswith("FConst"):
+            dir_path = f"BinaryChain-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/ones"
         else:
-            dir_path = f"RealArgument-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/ones"
+            dir_path = f"RealArgument-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/ones"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
  
@@ -59,8 +59,11 @@ class Population:
         best_genotype = self.get_best_genotype() 
         length = len(best_genotype)
 
-        scale = get_scale_factor(size, length)
-        rest_kwargs = { 'width': 0.1 } if size == 1 else { 'width': (size * scale) / length }
+        if not ff_name.startswith("FConst"):
+            scale = get_scale_factor(size, length)
+            rest_kwargs = { 'width': 0.1 } if size == 1 else { 'width': (size * scale) / length }
+        else:
+            rest_kwargs = { 'width': 2.5 }
 
         f = plt.figure()
         plt.hist(bins[:-1], size, weights=counts, **rest_kwargs)
@@ -72,12 +75,12 @@ class Population:
         plt.close(f)
 
     def print_phenotypes_distribution(
-        self, fitness_function_name, selection_name, run, iteration, fitness_function
+        self, ff_name, selection_name, run, iteration, fitness_function
     ):
-        if fitness_function_name.startswith("FHD"):
-            dir_path = f"BinaryChain-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/phenotypes"
+        if ff_name.startswith("FHD") or ff_name.startswith("FConst"):
+            dir_path = f"BinaryChain-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/phenotypes"
         else:
-            dir_path = f"RealArgument-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/phenotypes"
+            dir_path = f"RealArgument-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/phenotypes"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
@@ -85,13 +88,20 @@ class Population:
         size = len(set(values)) 
         counts, bins = np.histogram(values, bins=size)
 
-        rest_kwargs = { 
-            'width': 0.1 if fitness_function.extremum_y == 0 else fitness_function.extremum_y / 20
-        } if size == 1 else {}
+        if not ff_name.startswith("FConst"):
+            x_lim_min = 0
+            x_lim_max = fitness_function.extremum_y * 1.1
+            rest_kwargs = { 
+                'width': 0.1 if fitness_function.extremum_y == 0 else fitness_function.extremum_y / 20
+            } if size == 1 else {}
+        else:
+            x_lim_min = 75
+            x_lim_max = 125
+            rest_kwargs = { 'width': 2.5 }
 
         f = plt.figure()
         plt.hist(bins[:-1], size, weights=counts, **rest_kwargs)
-        plt.xlim(0, fitness_function.extremum_y * 1.1)
+        plt.xlim(x_lim_min, x_lim_max)
         plt.xlabel("Health")
         plt.ylabel("Number of individuals")
         plt.title("Phenotypes (fitness)")
@@ -100,12 +110,12 @@ class Population:
         plt.close(f)
 
     def print_genotypes_distribution(
-        self, fitness_function_name, selection_name, run, iteration, fitness_function
+        self, ff_name, selection_name, run, iteration, fitness_function
     ):
-        if fitness_function_name.startswith("FHD"):
-            dir_path = f"BinaryChain-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/genotypes"
+        if ff_name.startswith("FHD") or ff_name.startswith("FConst"):
+            dir_path = f"BinaryChain-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/genotypes"
         else:
-            dir_path = f"RealArgument-{ENCODING}/{N}/{fitness_function_name}/{selection_name}/{run}/genotypes"
+            dir_path = f"RealArgument-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/genotypes"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
@@ -113,9 +123,12 @@ class Population:
         size = len(set(values)) 
         counts, bins = np.histogram(values, bins=size)
 
-        rest_kwargs = { 
-            'width': 0.1 if fitness_function.extremum_x == 0 else fitness_function.extremum_x / 100 
-        } if size == 1 else {}
+        if not ff_name.startswith("FConst"): 
+            rest_kwargs = { 
+                'width': 0.1 if fitness_function.extremum_x == 0 else fitness_function.extremum_x / 100 
+            } if size == 1 else {}
+        else:
+            rest_kwargs = { 'width': 2.5 }
 
         f = plt.figure()
         plt.hist(bins[:-1], size, weights=counts, **rest_kwargs)
@@ -267,6 +280,10 @@ class Population:
     def update_chromosomes(self, chromosomes):
         self.chromosomes = chromosomes
         self.update()
+
+    def override_chromosome_keys(self):
+        for index, chromosome in enumerate(self.chromosomes):
+            self.chromosomes[index] = chromosome.clone(key=index)
 
     def __copy__(self):
         return Population(self.chromosomes.copy())

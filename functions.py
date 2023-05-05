@@ -33,8 +33,18 @@ class FHD:
     def generate_population(self, n, l):
         return self.factory.generate(n, l)
 
+    def __repr__(self):
+        return "FHD"
 
-class Fconst:
+
+class FConst:
+    def __init__(self):
+        self.factory = PopulationFactory(self)
+
+    def get_genotype_value(self, chromosome_code):
+        k = np.count_nonzero(chromosome_code)
+        return k
+
     def estimate(self, chromosome: Chromosome):
         return len(chromosome.code)
 
@@ -46,7 +56,15 @@ class Fconst:
 
     def generate_population(self, n, l):
         chromosomes = self.generate_optimal(l) * int(n / 2)
-        return Population(chromosomes)
+        population = Population(chromosomes)
+        population.override_chromosome_keys()
+        return population
+
+    def get_optimal(self, n, l):
+        return self.generate_optimal(l)
+
+    def __repr__(self):
+        return "FConst"
 
 
 class Fx2:
@@ -84,6 +102,9 @@ class Fx2:
         y = self.score(x)
         return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
 
+    def __repr__(self):
+        return "Fx2"
+
 
 class F5122subx2:
     def __init__(self, a: float, b: float):
@@ -119,6 +140,9 @@ class F5122subx2:
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
         y = self.score(x)
         return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
+    
+    def __repr__(self):
+        return "F5122subx2"
 
 
 class Fecx:
@@ -155,3 +179,6 @@ class Fecx:
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
         y = self.score(x)
         return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
+
+    def __repr__(self):
+        return "Fecx"
