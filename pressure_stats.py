@@ -86,10 +86,10 @@ class PressureStats:
 
     @staticmethod
     def calculate_intensity(fs, f, std):
-        if fs is None or f is None or std is None or std == 0:
-            return None
         if std == 0:
             return 1
+        if fs is None or f is None or std is None:
+            return None
         return s(fs, f) / std
 
     @staticmethod

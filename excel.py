@@ -22,7 +22,7 @@ def save_to_excel_internal(sheet, dictionary, col_num=1, row_num=2, print_keys=T
 
 
 def save_to_excel(runs_dictionary, file_name, has_noise_stats):
-    path = f"Report/{N}/{file_name}"
+    path = f"Report/{N}"
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -32,14 +32,12 @@ def save_to_excel(runs_dictionary, file_name, has_noise_stats):
     worksheet = workbook.add_worksheet()
     worksheet.name = str(N)
     func_num = 1
-    items_len = len(runs_dictionary)
     merge_format = workbook.add_format(
         {"bold": 1, "border": 1, "align": "center", "fg_color": "yellow"}
     )
 
     for func_name, runs_stats in runs_dictionary.items():
         worksheet.write(func_num + 1, 0, func_name)
-        worksheet.write(func_num + items_len + 3, 0, func_name)
         last_col_num = 1
         i = 0
 
@@ -82,18 +80,6 @@ def save_to_excel(runs_dictionary, file_name, has_noise_stats):
             worksheet.merge_range(
                 0, start_range, 0, last_col_num - 1, "Avg values", merge_format
             )
-        last_col_num = save_to_excel_internal(
-            worksheet, runs_stats.as_dict(), 1, func_num + items_len + 3, func_num == 1
-        )
-        if func_num == 1:
-            worksheet.merge_range(
-                func_num + items_len + 1,
-                1,
-                func_num + items_len + 1,
-                last_col_num - 1,
-                "Avg values",
-                merge_format,
-            )
 
         func_num = func_num + 1
 
@@ -104,12 +90,10 @@ def save_to_excel(runs_dictionary, file_name, has_noise_stats):
 
 
 def save_noise_to_excel(runs_dictionary, worksheet, merge_format):
-    items_len = len(runs_dictionary)
     func_num = 12
 
     for func_name, runs_stats in runs_dictionary.items():
         worksheet.write(func_num + 1, 0, func_name)
-        worksheet.write(func_num + items_len + 3, 0, func_name)
         last_col_num = 1
         i = 0
 
@@ -140,28 +124,12 @@ def save_noise_to_excel(runs_dictionary, worksheet, merge_format):
             worksheet.merge_range(
                 11, start_range, 11, last_col_num - 1, "Avg values", merge_format
             )
-        last_col_num = save_to_excel_internal(
-            worksheet,
-            runs_stats.as_noise_dict(),
-            1,
-            func_num + items_len + 3,
-            func_num == 12,
-        )
-        if func_num == 12:
-            worksheet.merge_range(
-                func_num + items_len + 1,
-                1,
-                func_num + items_len + 1,
-                last_col_num - 1,
-                "Avg values",
-                merge_format,
-            )
 
         func_num = func_num + 1
 
 
 def save_avg_to_excel(func_runs_list):
-    path = f"Report/{N}/AVG"
+    path = f"Report/{N}"
     if not os.path.exists(path):
         os.makedirs(path)
 

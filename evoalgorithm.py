@@ -67,37 +67,30 @@ class EvoAlgorithm:
                         self.iteration + 1,
                         self.fitness_function,
                     )
-            keys_before_selection = self.population.get_keys_list()
+
+            best_genotypes = self.population.get_best_genotypes()
             f = avg_fitness_list[self.iteration]
-
             self.population = self.selection_function.select(self.population)
-
             keys_after_selection = self.population.get_keys_list()
-            not_selected_chromosomes = set(keys_before_selection) - set(
-                keys_after_selection
-            )
-
+            selected_chromosome_keys = set(keys_after_selection)
+            f_parents_pool = self.population.get_mean_fitness()
             self.population.crossover(self.fitness_function, self.p_c)
             self.population.mutate(self.fitness_function, self.p_m)
-
             f_std = self.population.get_fitness_std()
             std_fitness_list.append(f_std)
             fs = self.population.get_mean_fitness()
             avg_fitness_list.append(fs)
-            self.selection_diff_stats.s_list.append(fs - f)
-
-            best_chromosome = self.population.get_best_chromosome()
-            num_of_best = self.population.get_chromosomes_copies_count(best_chromosome)
-
+            self.selection_diff_stats.s_list.append(f_parents_pool - f)
+            num_of_best = self.population.get_chromosomes_copies_counts(best_genotypes)
             self.reproduction_stats.rr_list.append(
-                1 - (len(not_selected_chromosomes) / N)
+                len(selected_chromosome_keys) / N
             )
             self.reproduction_stats.best_rr_list.append(
                 num_of_best / len(self.population.chromosomes)
             )
             self.pressure_stats.intensities.append(
                 PressureStats.calculate_intensity(
-                    self.population.get_mean_fitness(), f, f_std
+                    f_parents_pool, f, std_fitness_list[self.iteration]
                 )
             )
             self.pressure_stats.f_best.append(self.population.get_max_fitness())
@@ -169,14 +162,14 @@ class EvoAlgorithm:
         )
 
     def check_success(self):
-        ff_name = self.fitness_function.__class__.__name__
-        if ff_name == "FHD":
+        ff_name = repr(self.fitness_function)
+        if ff_name.startswith("FHD"):
             optimal_chromosome = self.fitness_function.generate_optimal(len(self.population.genotypes_list[0]))
             optimal_chromosomes = self.population.get_chromosomes_copies_count(
                 optimal_chromosome
             )
             return optimal_chromosomes == N
-        elif ff_name == "FConst":
+        elif ff_name.startswith("FConst"):
             return self.population.is_identical
         else:
             success_chromosomes = [
