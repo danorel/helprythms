@@ -31,7 +31,10 @@ pm_x = 0.0001
 pc = 1
 
 fconst_arguments = [
-    ("FConst", 0, 0)
+    ("FConst", 0, 0),
+    ("FConst_pc", 0, pc),
+    ("FConst_pm", pm_b, 0),
+    ("FConst_pmpc", pm_b, pc),
 ]
 fconst_fitness_config = (FConst(), N, 100)
 
