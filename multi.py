@@ -30,7 +30,7 @@ pm_b = 0.00001
 pm_x = 0.0001
 pc = 1
 
-fconst_arguments = [
+fconst_arguments = [] if ENCODING == "gray" else [
     ("FConst", 0, 0),
     ("FConst_pc", 0, pc),
     ("FConst_pm", pm_b, 0),
@@ -38,7 +38,7 @@ fconst_arguments = [
 ]
 fconst_fitness_config = (FConst(), N, 100)
 
-fhd_arguments = [
+fhd_arguments = [] if ENCODING == "gray" else [
     ("FHD", 0, 0),
     ("FHD_pc", 0, pc),
     ("FHD_pm", pm_b, 0),
@@ -52,7 +52,7 @@ fx2_arguments = [
     ("Fx2_pc", 0, pc),
     ("Fx2_pmpc", pm_x, pc),
 ]
-fx2_fitness_config = (Fx2(0, 10.23), N, 10)
+fx2_fitness_config = (Fx2(), N, 10)
 
 f5122subx2_arguments = [
     ("512subx2", 0, 0),
@@ -60,7 +60,7 @@ f5122subx2_arguments = [
     ("512subx2_pc", 0, pc),
     ("512subx2_pmpc", pm_x, pc),
 ]
-f5122subx2_fitness_config = (F5122subx2(-5.11, 5.12), N, 10)
+f5122subx2_fitness_config = (F5122subx2(), N, 10)
 
 test_arguments = [
     [("FConst", 0, 0)],
@@ -70,8 +70,8 @@ test_arguments = [
 ]
 test_fitness_configs = [
     (FConst(), N, 100),
-    (Fx2(0, 10.23), N, 10),
-    (F5122subx2(-5.11, 5.12), N, 10),
+    (Fx2(), N, 10),
+    (F5122subx2(), N, 10),
     (FHD(100), N, 100)
 ]
 
@@ -85,7 +85,7 @@ relase_fitness_configs = [
     fhd_fitness_config,
     fx2_fitness_config,
     f5122subx2_fitness_config,
-    fconst_arguments
+    fconst_fitness_config
 ]
 
 def run_functions(fitness_config, arguments):
@@ -115,20 +115,17 @@ def run_functions(fitness_config, arguments):
                     print(f"{file_name} for {sf_name} per {run} run: saving plots...")
                     save_run_plots(file_name, sf_name, run_stats, run)
 
-            if run == ITERATIONS_TO_REPORT - 1:
-                print(f"{file_name}, {run} run: saving reports...")
-                sf_run_dictionary = runs_stats[file_name]
-                for selection_method in selection_methods:
-                    sf_name = repr(selection_method)
-                    sf_run_stats = runs_stats[file_name][sf_name]
-                    sf_run_stats.calculate()
-                save_to_excel(sf_run_dictionary, file_name, file_name.startswith("FConst"))
-    
     for argument in arguments:
         file_name, *_ = argument
+        has_noise_stats = file_name.startswith("FConst")
         for selection_method in selection_methods:
             sf_name = repr(selection_method)
             runs_stats[file_name][sf_name].calculate()
+            if has_noise_stats:
+                runs_stats[file_name][sf_name].calculate_noise_stats()
+        sf_run_dictionary = runs_stats[file_name]
+        print(f"{file_name}: saving reports...")
+        save_to_excel(sf_run_dictionary, file_name, has_noise_stats)
 
     return runs_stats
 

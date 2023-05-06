@@ -3,6 +3,7 @@ from selection_diff_stats import SelectionDiffStats
 from reproduction_stats import ReproductionStats
 from noise_stats import NoiseStats
 from run import Run
+from population import Population
 from functions import *
 from constants import *
 
@@ -24,6 +25,7 @@ class EvoAlgorithm:
         self.reproduction_stats = ReproductionStats()
         self.selection_diff_stats = SelectionDiffStats()
         self.best = self.population.get_best_genotype()
+        self.optimal_chromosome = fitness_function.generate_optimal(len(initial_population.genotypes_list[0]))
         self.pressure_stats.num_of_best.append(
             self.population.genotypes_list.count(self.best)
         )
@@ -37,6 +39,7 @@ class EvoAlgorithm:
         self.iteration = 0
         avg_fitness_list = [self.population.get_mean_fitness()]
         std_fitness_list = [self.population.get_fitness_std()]
+        optimal_count = [self.population.get_chromosomes_copies_count(self.optimal_chromosome)]
         stop = G
         convergent = self.population.estimate_convergence(self.p_m)
 
@@ -52,15 +55,16 @@ class EvoAlgorithm:
                     self.iteration + 1,
                     self.fitness_function
                 )
-                self.population.print_phenotypes_distribution(
-                    folder_name,
-                    sf_name,
-                    run + 1,
-                    self.iteration + 1,
-                    self.fitness_function,
-                )
-                if not ff_name.startswith("FHD"): 
+                if not ff_name.startswith("FConst"):
                     self.population.print_genotypes_distribution(
+                        folder_name,
+                        sf_name,
+                        run + 1,
+                        self.iteration + 1,
+                        self.fitness_function,
+                    )
+                if not ff_name.startswith("FConst"):
+                    self.population.print_phenotypes_distribution(
                         folder_name,
                         sf_name,
                         run + 1,
@@ -80,6 +84,7 @@ class EvoAlgorithm:
             std_fitness_list.append(f_std)
             fs = self.population.get_mean_fitness()
             avg_fitness_list.append(fs)
+            optimal_count.append(self.population.get_chromosomes_copies_count(self.optimal_chromosome))
             self.selection_diff_stats.s_list.append(f_parents_pool - f)
             num_of_best = self.population.get_chromosomes_copies_counts(best_genotypes)
             self.reproduction_stats.rr_list.append(
@@ -120,22 +125,26 @@ class EvoAlgorithm:
                 sf_name,
                 run + 1,
                 self.iteration + 1,
-                self.fitness_function
-            )
-            self.population.print_phenotypes_distribution(
-                folder_name,
-                sf_name,
-                run + 1,
-                self.iteration + 1,
                 self.fitness_function,
+                is_last_iteration=True
             )
-            if not ff_name.startswith("FHD"): 
+            if not ff_name.startswith("FConst"):
                 self.population.print_genotypes_distribution(
                     folder_name,
                     sf_name,
                     run + 1,
                     self.iteration + 1,
                     self.fitness_function,
+                    is_last_iteration=True
+                )
+            if not ff_name.startswith("FConst"):
+                self.population.print_phenotypes_distribution(
+                    folder_name,
+                    sf_name,
+                    run + 1,
+                    self.iteration + 1,
+                    self.fitness_function,
+                    is_last_iteration=True
                 )
 
         self.pressure_stats.takeover_time = self.iteration
@@ -154,6 +163,7 @@ class EvoAlgorithm:
         return Run(
             avg_fitness_list,
             std_fitness_list,
+            optimal_count,
             self.pressure_stats,
             self.reproduction_stats,
             self.selection_diff_stats,
@@ -164,13 +174,13 @@ class EvoAlgorithm:
     def check_success(self):
         ff_name = repr(self.fitness_function)
         if ff_name.startswith("FHD"):
-            optimal_chromosome = self.fitness_function.generate_optimal(len(self.population.genotypes_list[0]))
-            optimal_chromosomes = self.population.get_chromosomes_copies_count(
-                optimal_chromosome
-            )
-            return optimal_chromosomes == N
+            optimal_chromosomes = self.population.get_chromosomes_copies_count(self.optimal_chromosome)
+            if self.p_m:
+                return optimal_chromosomes >= .9 * N
+            else:
+                return optimal_chromosomes == N
         elif ff_name.startswith("FConst"):
-            return self.population.is_identical
+            return True
         else:
             success_chromosomes = [
                 self.fitness_function.check_chromosome_success(p)

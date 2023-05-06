@@ -8,7 +8,9 @@ class PopulationFactory:
         self.fitness_function = fitness_function
 
     def generate(self, n, l):
-        chromosomes = [self.fitness_function.generate_optimal(l)]
+        ff_name = repr(self.fitness_function) 
+
+        chromosomes = [] if ff_name.startswith("FConst") else [self.fitness_function.generate_optimal(l)]
 
         start = len(chromosomes)
 

@@ -3,6 +3,7 @@ class Run:
         self,
         avg_fitness_list=None,
         std_fitness_list=None,
+        optimal_count=None,
         pressure_stats=None,
         reproduction_stats=None,
         selection_diff_stats=None,
@@ -11,6 +12,7 @@ class Run:
     ):
         self.avg_fitness_list = avg_fitness_list
         self.std_fitness_list = std_fitness_list
+        self.optimal_count = optimal_count
         self.pressure_stats = pressure_stats
         self.reproduction_stats = reproduction_stats
         self.selection_diff_stats = selection_diff_stats

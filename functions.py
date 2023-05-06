@@ -1,8 +1,7 @@
 import numpy as np
 
 from chromosome import Chromosome
-from constants import DELTA, SIGMA, N
-from population import Population
+from constants import DELTA, SIGMA
 from population_factory import PopulationFactory
 from coding import *
 
@@ -10,8 +9,10 @@ from coding import *
 class FHD:
     def __init__(self, delta: float = 100.0):
         self.delta = delta
-        self.extremum_x = 0
-        self.extremum_y = self.estimate([0]*100) 
+        self.a = 0
+        self.b = 100
+        self.x = (self.a, self.b)
+        self.y = (self.estimate([0]*100), self.estimate([1]*100))
         self.factory = PopulationFactory(self)
 
     def get_genotype_value(self, chromosome_code):
@@ -39,26 +40,27 @@ class FHD:
 
 class FConst:
     def __init__(self):
+        self.a = 0
+        self.b = 100
+        self.x = (self.a, self.b)
+        self.y = (self.score(self.a), self.score(self.b))
         self.factory = PopulationFactory(self)
 
     def get_genotype_value(self, chromosome_code):
         k = np.count_nonzero(chromosome_code)
         return k
 
-    def estimate(self, chromosome: Chromosome):
-        return len(chromosome.code)
+    def score(self, x: float):
+        return 100
+
+    def estimate(self, chromosome_code):
+        return len(chromosome_code)
 
     def generate_optimal(self, length: int):
-        return [
-            Chromosome(np.zeros((length,), dtype=int), length),
-            Chromosome(np.ones((length,), dtype=int), length),
-        ]
+        return Chromosome(np.zeros((length,), dtype=int), length)
 
     def generate_population(self, n, l):
-        chromosomes = self.generate_optimal(l) * int(n / 2)
-        population = Population(chromosomes)
-        population.override_chromosome_keys()
-        return population
+        return self.factory.generate(n, l)
 
     def get_optimal(self, n, l):
         return self.generate_optimal(l)
@@ -68,11 +70,11 @@ class FConst:
 
 
 class Fx2:
-    def __init__(self, a: float, b: float):
-        self.a = a
-        self.b = b
-        self.extremum_x = b
-        self.extremum_y = math.pow(b, 2)
+    def __init__(self):
+        self.a = 0
+        self.b = 10.23
+        self.x = (self.a, self.b)
+        self.y = (self.score(self.a), self.score(self.b))
         self.factory = PopulationFactory(self)
 
     def score(self, x: float):
@@ -87,31 +89,34 @@ class Fx2:
         x = decode(chromosome_code, self.a, self.b, len(chromosome_code))
         return x
 
-    def generate_optimal(self, length):
-        coding = encode(self.extremum_x, self.a, self.b, length)
-        return Chromosome(coding, self.estimate(coding))
-
     def get_optimal(self, n, l):
         return self.generate_optimal(l)
+
+    def generate_optimal(self, length):
+        x_max = self.x[1]
+        coding = encode(x_max, self.a, self.b, length)
+        return Chromosome(coding, self.estimate(coding))
 
     def generate_population(self, n, l):
         return self.factory.generate(n, l)
 
     def check_chromosome_success(self, chromosome: Chromosome):
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
+        x_max = self.x[1]
         y = self.score(x)
-        return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
+        y_max = self.y[1]
+        return abs(y_max - y) <= DELTA and abs(x_max - x) <= SIGMA
 
     def __repr__(self):
         return "Fx2"
 
 
 class F5122subx2:
-    def __init__(self, a: float, b: float):
-        self.a = a
-        self.b = b
-        self.extremum_x = .0
-        self.extremum_y = math.pow(5.12, 2)
+    def __init__(self):
+        self.a = -5.12
+        self.b = 5.11
+        self.x = (self.a, 0)
+        self.y = (self.score(self.a), self.score(0))
         self.factory = PopulationFactory(self)
 
     def score(self, x: float):
@@ -130,7 +135,8 @@ class F5122subx2:
         return self.generate_optimal(l)
 
     def generate_optimal(self, length):
-        coding = encode(self.extremum_x, self.a, self.b, length)
+        x_max = 0
+        coding = encode(x_max, self.a, self.b, length)
         return Chromosome(coding, self.estimate(coding))
 
     def generate_population(self, n, l):
@@ -138,20 +144,22 @@ class F5122subx2:
 
     def check_chromosome_success(self, chromosome: Chromosome):
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
+        x_max = self.x[1]
         y = self.score(x)
-        return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
+        y_max = self.y[1]
+        return abs(y_max - y) <= DELTA and abs(x_max - x) <= SIGMA
     
     def __repr__(self):
         return "F5122subx2"
 
 
 class Fecx:
-    def __init__(self, a: float, b: float, c: float):
-        self.a = a
-        self.b = b
+    def __init__(self, c: float):
+        self.a = 0
+        self.b = 10.23
+        self.x = (self.a, self.b)
+        self.y = (self.score(self.a), self.score(self.b))
         self.c = c
-        self.extremum_x = b
-        self.extremum_y = math.exp(c * b)
         self.factory = PopulationFactory(self)
 
     def score(self, x: float):
@@ -166,7 +174,8 @@ class Fecx:
         return x
 
     def generate_optimal(self, length):
-        coding = encode(self.extremum_x, self.a, self.b, length)
+        x_max = self.x[1]
+        coding = encode(x_max, self.a, self.b, length)
         return Chromosome(coding, self.estimate(coding))
 
     def get_optimal(self, n, l):
@@ -177,8 +186,10 @@ class Fecx:
 
     def check_chromosome_success(self, chromosome: Chromosome):
         x = decode(chromosome.code, self.a, self.b, len(chromosome.code))
+        x_max = self.x[1]
         y = self.score(x)
-        return abs(self.extremum_y - y) <= DELTA and abs(self.extremum_x - x) <= SIGMA
+        y_max = self.y[1]
+        return abs(y_max - y) <= DELTA and abs(x_max - x) <= SIGMA
 
     def __repr__(self):
         return "Fecx"

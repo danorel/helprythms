@@ -8,29 +8,6 @@ from chromosome import Chromosome
 from constants import N, ENCODING
 
 
-def get_scale_factor(size: int, length: int):
-    if length == 100:
-        if size > 20:
-            return 5
-        elif size > 15:
-            return 7
-        elif size > 10:
-            return 9
-        elif size > 5:
-            return 11
-        else:
-            return 13
-    else:
-        if size > 10:
-            return 0.25
-        elif size > 8:
-            return 0.5
-        elif size > 5:
-            return 0.75
-        else:
-            return 1
-
-
 class Population:
     def __init__(self, chromosomes: list[Chromosome]):
         self.chromosomes = chromosomes
@@ -43,104 +20,113 @@ class Population:
         )
 
     def print_ones_distribution(
-        self, ff_name, selection_name, run, iteration, fitness_function
+        self, ff_name, selection_name, run, iteration, fitness_function, is_last_iteration=False
     ):
         if ff_name.startswith("FHD") or ff_name.startswith("FConst"):
-            dir_path = f"BinaryChain-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/ones"
+            dir_path = f"BinaryChain/{N}/{ff_name}/{selection_name}/{run}/ones"
         else:
             dir_path = f"RealArgument-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/ones"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
+
+        length = len(self.genotypes_list[0])
  
         values = [genotype_list.count(1) for genotype_list in self.genotypes_list]
-        size = len(set(values))
-        counts, bins = np.histogram(values, bins=size)
+        boxes = 10
+        counts, bins = np.histogram(values, bins=boxes)
 
-        best_genotype = self.get_best_genotype() 
-        length = len(best_genotype)
+        ones_min, ones_max = (0, length)
+        ones_step = (ones_max - ones_min) / boxes
+        ones_left, ones_right = int(ones_min - ones_step), int(ones_max + ones_step)
+        ticks = np.arange(ones_left, ones_right, 1 if length == 10 else 10)
 
-        if not ff_name.startswith("FConst"):
-            scale = get_scale_factor(size, length)
-            rest_kwargs = { 'width': 0.1 } if size == 1 else { 'width': (size * scale) / length }
-        else:
-            rest_kwargs = { 'width': 2.5 }
+        kwargs = {} if not is_last_iteration else { 'width': ones_step / 10 if length == 100 else ones_step / 5 }
 
         f = plt.figure()
-        plt.hist(bins[:-1], size, weights=counts, **rest_kwargs)
-        plt.xlabel("Number of ones")
+        plt.xlim(ones_left, ones_right)
+        plt.xticks(ticks, rotation='vertical')
+        plt.hist(bins[:-1], len(bins), weights=counts, **kwargs)
+        plt.xlabel("Ones in a genotype bin")
         plt.ylabel("Number of individuals")
-        plt.title("Counts (ones)")
+        plt.title("Ones distribution")
         plt.savefig(f"{dir_path}/{iteration}.png")
         f.clear()
         plt.close(f)
 
     def print_phenotypes_distribution(
-        self, ff_name, selection_name, run, iteration, fitness_function
+        self, ff_name, selection_name, run, iteration, fitness_function, is_last_iteration=False
     ):
-        if ff_name.startswith("FHD") or ff_name.startswith("FConst"):
-            dir_path = f"BinaryChain-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/phenotypes"
+        if ff_name.startswith("FConst"):
+            return 
+        elif ff_name.startswith("FHD"):
+            dir_path = f"BinaryChain/{N}/{ff_name}/{selection_name}/{run}/phenotypes"
         else:
             dir_path = f"RealArgument-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/phenotypes"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
-        values = self.phenotypes_list
-        size = len(set(values)) 
-        counts, bins = np.histogram(values, bins=size)
+        length = len(self.genotypes_list[0])
 
-        if not ff_name.startswith("FConst"):
-            x_lim_min = 0
-            x_lim_max = fitness_function.extremum_y * 1.1
-            rest_kwargs = { 
-                'width': 0.1 if fitness_function.extremum_y == 0 else fitness_function.extremum_y / 20
-            } if size == 1 else {}
-        else:
-            x_lim_min = 75
-            x_lim_max = 125
-            rest_kwargs = { 'width': 2.5 }
+        values = self.phenotypes_list
+        boxes = 20 if length == 10 else 10
+        counts, bins = np.histogram(values, bins=boxes)
+
+        y_min, y_max = fitness_function.y
+        y_step = (y_max - y_min) / boxes
+        y_left, y_right = (y_min - y_step), (y_max + y_step)
+        ticks = np.arange(y_left, y_right, y_step)
+
+        kwargs = {} if not is_last_iteration else { 'width': y_step / 10 }
 
         f = plt.figure()
-        plt.hist(bins[:-1], size, weights=counts, **rest_kwargs)
-        plt.xlim(x_lim_min, x_lim_max)
+        plt.xlim(y_left, y_right)
+        plt.xticks(ticks, rotation='vertical')
+        plt.hist(bins[:-1], len(bins), weights=counts, **kwargs)
         plt.xlabel("Health")
         plt.ylabel("Number of individuals")
-        plt.title("Phenotypes (fitness)")
+        plt.title("Phenotypes (fitness) distribution")
         plt.savefig(f"{dir_path}/{iteration}.png")
         f.clear()
         plt.close(f)
 
     def print_genotypes_distribution(
-        self, ff_name, selection_name, run, iteration, fitness_function
+        self, ff_name, selection_name, run, iteration, fitness_function, is_last_iteration=False
     ):
-        if ff_name.startswith("FHD") or ff_name.startswith("FConst"):
-            dir_path = f"BinaryChain-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/genotypes"
+        if ff_name.startswith("FConst"):
+            return 
+        elif ff_name.startswith("FHD"):
+            dir_path = f"BinaryChain/{N}/{ff_name}/{selection_name}/{run}/genotypes"
         else:
             dir_path = f"RealArgument-{ENCODING}/{N}/{ff_name}/{selection_name}/{run}/genotypes"
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
-        values = [fitness_function.get_genotype_value(code) for code in self.genotypes_list]
-        size = len(set(values)) 
-        counts, bins = np.histogram(values, bins=size)
+        length = len(self.genotypes_list[0])
 
-        if not ff_name.startswith("FConst"): 
-            rest_kwargs = { 
-                'width': 0.1 if fitness_function.extremum_x == 0 else fitness_function.extremum_x / 100 
-            } if size == 1 else {}
-        else:
-            rest_kwargs = { 'width': 2.5 }
+        values = [fitness_function.get_genotype_value(code) for code in self.genotypes_list]
+        boxes = 20 if length == 10 else 10
+        counts, bins = np.histogram(values, bins=boxes)
+
+        x_min, x_max = fitness_function.a, fitness_function.b
+        x_step = (x_max - x_min) / boxes
+        x_left, x_right = (x_min - x_step), (x_max + x_step)
+        ticks = np.arange(x_left, x_right, x_step)
+
+        kwargs = {} if not is_last_iteration else { 'width': x_step / 10 }
 
         f = plt.figure()
-        plt.hist(bins[:-1], size, weights=counts, **rest_kwargs)
-        plt.xlabel("X")
+        plt.xlim(x_left, x_right)
+        plt.xticks(ticks, rotation='vertical')
+        plt.hist(bins[:-1], len(bins), weights=counts, **kwargs)
+        plt.xlabel("x")
         plt.ylabel("Number of individuals")
-        plt.title("Genotype (x)")
+        plt.title("Genotype (x) distribution")
         plt.savefig(f"{dir_path}/{iteration}.png")
         f.clear()
         plt.close(f)
 
     def estimate_convergence(self, p_m):
-        if p_m == 0:
+        if not p_m or p_m == 0:
             return self.is_identical
         else:
             return self.is_homogeneous(percentage=99)
@@ -244,12 +230,20 @@ class Population:
     def get_keys_list(self):
         return list(map(lambda chromosome: chromosome.key, self.chromosomes))
 
-    def get_chromosomes_copies_count(self, genotype_copy: Chromosome):
+    def get_chromosomes_copies_count(self, chromosome_sample_or_list):
+        if type(chromosome_sample_or_list) == list:
+            chromosome_list = chromosome_sample_or_list
+            return self.get_chromosomes_copy_count(chromosome_list)
+        else:
+            chromosome_sample = chromosome_sample_or_list
+            return self.get_chromosomes_copy_count([chromosome_sample])
+
+    def get_chromosomes_copy_count(self, chromosome_list: list[Chromosome]):
         copies_count = 0
         genotypes_available = [''.join(map(str, genotype)) for genotype in self.genotypes_list]
-        genotype_copy = ''.join(map(str, genotype_copy.code))
+        genotype_copies = [''.join(map(str, chromosome.code)) for chromosome in chromosome_list]
         for genotype_available in genotypes_available:
-            copies_count += (genotype_available == genotype_copy)
+            copies_count += 1 if genotype_available in genotype_copies else 0
         return copies_count
 
     def get_chromosomes_copies_counts(self, genotypes: list[list[int]]) -> int:

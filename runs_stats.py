@@ -317,7 +317,7 @@ class RunsStats:
         return {
             "Noise Suc": [self.noise_suc],
             "Noise 0": [self.noise_num0],
-            "Moise 1": [self.noise_num1],
+            "Noise 1": [self.noise_num1],
             "Noise NI min": [self.noise_NI_min],
             "Noise NI max": [self.noise_NI_max],
             "Noise NI avg": [self.noise_NI_avg],
