@@ -14,20 +14,25 @@ from runs_stats import RunsStats
 from excel import save_to_excel
 
 
-selection_methods = [
-    RankExponentialSUS(c=0.9801),
-    RankExponentialSUS(c=0.95099005),
-    RankExponentialSUS(c=0.941480149),
-    RankExponentialSUS(c=0.904382075),
+C1 = 0.990025
+C2 = 0.975248753
+C3 = 0.970372509
+C4 = 0.95111013
 
-    RankExponentialRWS(c=0.9801),
-    RankExponentialRWS(c=0.95099005),
-    RankExponentialRWS(c=0.941480149),
-    RankExponentialRWS(c=0.904382075),
+selection_methods = [
+    RankExponentialSUS(c=C1),
+    RankExponentialSUS(c=C2),
+    RankExponentialSUS(c=C3),
+    RankExponentialSUS(c=C4),
+
+    RankExponentialRWS(c=C1),
+    RankExponentialRWS(c=C2),
+    RankExponentialRWS(c=C3),
+    RankExponentialRWS(c=C4),
 ]
 
-pm_b = 0.00001
-pm_x = 0.0001
+pm_b = 0.000005
+pm_x = 0.00005
 pc = 1
 
 fconst_arguments = [] if ENCODING == "gray" else [
@@ -111,7 +116,7 @@ def run_functions(fitness_config, arguments):
                 run_stats = main(run, fitness_function, initial_population, selection_method, file_name, *rest_argument)
                 runs_stats[file_name][sf_name].runs.append(run_stats)
 
-                if run <= ITERATIONS_TO_REPORT:
+                if run < ITERATIONS_TO_REPORT:
                     print(f"{file_name} for {sf_name} per {run} run: saving plots...")
                     save_run_plots(file_name, sf_name, run_stats, run)
 
