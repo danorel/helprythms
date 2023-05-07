@@ -136,14 +136,14 @@ class Population:
             "According to formula: (unique / total) * 100 <= 100 - percentage, "
             "we can't have percentage >= 100!"
         )
-        chromosomes = ["".join(map(str, genotype)) for genotype in self.genotypes_list]
+        chromosomes = [self.bin2int(genotype) for genotype in self.genotypes_list]
         total = len(chromosomes)
         unique = len(set(chromosomes))
         return (unique / total) * 100 <= 100 - percentage
 
     @property
     def is_identical(self) -> bool:
-        genotypes = {"".join(map(str, genotype)) for genotype in self.genotypes_list}
+        genotypes = {self.bin2int(genotype) for genotype in self.genotypes_list}
         return len(genotypes) == 1
 
     def crossover(self, fitness_function, p_c):
@@ -213,14 +213,17 @@ class Population:
         best_genotype = self.genotypes_list[best_index]
         return best_genotype
 
-    def get_best_genotypes(self) -> list[list[int]]:
+    def get_best_chromosomes(self) -> list[Chromosome]:
         max_fitness = self.get_max_fitness()
-        best_genotypes = [
-            self.genotypes_list[index]
-            for index, fitness_value in enumerate(self.phenotypes_list)
-            if fitness_value == max_fitness
+        best_phenotypes_indices = np.argwhere(self.phenotypes_list == max_fitness)[0].astype(np.int8)
+        best_chromosomes_duplicated = [self.chromosomes[i] for i in best_phenotypes_indices]
+        best_chromosomes_keys = set()
+        best_chromosomes = [
+            chromosome for chromosome in best_chromosomes_duplicated
+            if chromosome.key not in best_chromosomes_keys
+            and not best_chromosomes_keys.add(chromosome.key)
         ]
-        return list(np.unique(best_genotypes, axis=0))
+        return best_chromosomes
 
     def get_best_chromosome(self) -> Chromosome:
         best_index = self.phenotypes_list.argmax()
@@ -240,15 +243,23 @@ class Population:
 
     def get_chromosomes_copy_count(self, chromosome_list: list[Chromosome]):
         copies_count = 0
-        genotypes_available = [''.join(map(str, genotype)) for genotype in self.genotypes_list]
-        genotype_copies = [''.join(map(str, chromosome.code)) for chromosome in chromosome_list]
+        genotypes_available = [self.bin2int(genotype) for genotype in self.genotypes_list]
+        genotype_copies = {self.bin2int(chromosome.code) for chromosome in chromosome_list}
+
         for genotype_available in genotypes_available:
             copies_count += 1 if genotype_available in genotype_copies else 0
         return copies_count
 
+    def bin2int(self, bits):
+        total = 0
+        for shift, j in enumerate(bits[::-1]):
+            if j:
+                total += 1 << shift
+        return total
+
     def get_chromosomes_copies_counts(self, genotypes: list[list[int]]) -> int:
-        all_genotypes = [''.join(map(str, genotype)) for genotype in self.genotypes_list]
-        unique_genotypes = {''.join(map(str, genotype)) for genotype in genotypes}
+        all_genotypes = [self.bin2int(genotype) for genotype in self.genotypes_list]
+        unique_genotypes = {self.bin2int(genotype) for genotype in genotypes}
 
         copies_count = 0
         for genotype in unique_genotypes:
@@ -265,10 +276,7 @@ class Population:
         )
 
     def update_rws(self, probabilities):
-        self.chromosomes = [
-            np.random.choice(self.chromosomes, p=probabilities)
-            for _ in range(0, len(self.chromosomes))
-        ]
+        self.chromosomes = np.random.choice(self.chromosomes, len(self.chromosomes), p=probabilities).tolist()
         self.update()
 
     def update_chromosomes(self, chromosomes):

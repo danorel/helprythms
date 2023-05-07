@@ -72,7 +72,7 @@ class EvoAlgorithm:
                         self.fitness_function,
                     )
 
-            best_genotypes = self.population.get_best_genotypes()
+            best_chromosomes = self.population.get_best_chromosomes()
             f = avg_fitness_list[self.iteration]
             self.population = self.selection_function.select(self.population)
             keys_after_selection = self.population.get_keys_list()
@@ -86,7 +86,7 @@ class EvoAlgorithm:
             avg_fitness_list.append(fs)
             optimal_count.append(self.population.get_chromosomes_copies_count(self.optimal_chromosome))
             self.selection_diff_stats.s_list.append(f_parents_pool - f)
-            num_of_best = self.population.get_chromosomes_copies_counts(best_genotypes)
+            num_of_best = self.population.get_chromosomes_copies_count(best_chromosomes)
             self.reproduction_stats.rr_list.append(
                 len(selected_chromosome_keys) / N
             )
